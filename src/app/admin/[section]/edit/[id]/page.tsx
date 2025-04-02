@@ -141,7 +141,7 @@ export default function AdminEditPage() {
       case 'organizations':
         return [
           { name: 'name', label: 'Organization Name', type: 'text', required: true },
-          { name: 'role', label: 'Role', type: 'text', required: true },
+          { name: 'role', label: 'Your Role', type: 'text', required: true },
           { name: 'start_date', label: 'Start Date', type: 'date', required: true },
           { name: 'end_date', label: 'End Date', type: 'date' },
           { name: 'description', label: 'Description', type: 'textarea' },

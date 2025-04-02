@@ -59,20 +59,90 @@ export default function HomeSection() {
         >
           <h2 className="text-2xl mb-6 text-shadow-md">Software Developer & AI Enthusiast</h2>
           
-          <div className="flex justify-center space-x-4">
+          <div className="flex justify-center space-x-4 flex-wrap">
             <Link href="#about">
               <motion.button 
-                className="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition"
+                className="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition m-2"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Explore
+                About
+              </motion.button>
+            </Link>
+            
+            <Link href="#experiences">
+              <motion.button 
+                className="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition m-2"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Experience
+              </motion.button>
+            </Link>
+            
+            <Link href="#projects">
+              <motion.button 
+                className="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition m-2"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Projects
+              </motion.button>
+            </Link>
+            
+            <Link href="#skills">
+              <motion.button 
+                className="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition m-2"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Skills
+              </motion.button>
+            </Link>
+            
+            <Link href="#awards">
+              <motion.button 
+                className="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition m-2"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Awards
+              </motion.button>
+            </Link>
+            
+            <Link href="#languages">
+              <motion.button 
+                className="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition m-2"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Languages
+              </motion.button>
+            </Link>
+            
+            <Link href="#organizations">
+              <motion.button 
+                className="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition m-2"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Organizations
+              </motion.button>
+            </Link>
+            
+            <Link href="#volunteering">
+              <motion.button 
+                className="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition m-2"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Volunteering
               </motion.button>
             </Link>
             
             <Link href="#contact">
               <motion.button 
-                className="px-6 py-2 bg-transparent border-2 border-white text-white rounded-full hover:bg-white hover:text-blue-600 transition"
+                className="px-6 py-2 bg-transparent border-2 border-white text-white rounded-full hover:bg-white hover:text-blue-600 transition m-2"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -80,8 +150,6 @@ export default function HomeSection() {
               </motion.button>
             </Link>
           </div>
-          
-          {/* Menghapus hidden element karena sudah tidak diperlukan */}
           
           {/* Admin link that appears after secret pattern */}
           {showAdminLink && (
