@@ -80,12 +80,12 @@ export default function HomeSection() {
             </Link>
           </div>
           
-          {/* Hidden element for admin access */}
+          {/* Hidden element for admin access - temporarily visible */}
           <div 
-            className="mt-16 text-xs opacity-0 cursor-default select-none"
+            className="mt-16 text-xs opacity-50 cursor-pointer select-none bg-blue-300 p-4 rounded"
             onClick={handleSecretClick}
           >
-            &nbsp;
+            Klik area ini 5 kali untuk memunculkan admin link
           </div>
           
           {/* Admin link that appears after secret pattern */}
