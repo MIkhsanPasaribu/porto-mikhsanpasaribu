@@ -1,0 +1,173 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { supabase } from '@/lib/supabase';
+
+interface Certification {
+  id: number;
+  name: string;
+  organization: string;
+  issue_date: string;
+  expiry_date: string | null;
+  credential_id: string | null;
+  credential_url: string | null;
+  description: string | null;
+  organization_logo: string | null;
+}
+
+export default function CertificationsSection() {
+  const [certifications, setCertifications] = useState<Certification[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    const fetchCertifications = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('certifications')
+          .select('*')
+          .order('issue_date', { ascending: false });
+        
+        if (error) throw error;
+        
+        setCertifications(data || []);
+      } catch (error) {
+        console.error('Error fetching certifications:', error);
+        // Fallback data
+        const fallbackCertifications = [
+          {
+            id: 1,
+            name: 'AWS Certified Solutions Architect',
+            organization: 'Amazon Web Services',
+            issue_date: '2022-03-15',
+            expiry_date: '2025-03-15',
+            credential_id: 'AWS-123456',
+            credential_url: 'https://aws.amazon.com/verification',
+            description: 'Validates expertise in designing distributed systems on AWS.',
+            organization_logo: '/logos/aws.png'
+          },
+          {
+            id: 2,
+            name: 'TensorFlow Developer Certificate',
+            organization: 'Google',
+            issue_date: '2021-07-10',
+            expiry_date: null,
+            credential_id: 'TF-789012',
+            credential_url: 'https://www.tensorflow.org/certificate',
+            description: 'Demonstrates proficiency in using TensorFlow to solve deep learning problems.',
+            organization_logo: '/logos/tensorflow.png'
+          },
+          {
+            id: 3,
+            name: 'Professional Scrum Master I',
+            organization: 'Scrum.org',
+            issue_date: '2020-11-05',
+            expiry_date: null,
+            credential_id: 'PSM-345678',
+            credential_url: 'https://www.scrum.org/certificates',
+            description: 'Validates understanding of Scrum framework and ability to apply it.',
+            organization_logo: '/logos/scrum.png'
+          }
+        ];
+        setCertifications(fallbackCertifications);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchCertifications();
+  }, []);
+  
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return 'No Expiration';
+    
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  };
+  
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-40">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
+        <h2 className="text-3xl font-bold text-center mb-12">Licenses & Certifications</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {certifications.map((cert, index) => (
+            <motion.div
+              key={cert.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              viewport={{ once: true }}
+              className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+            >
+              <div className="flex items-start">
+                {cert.organization_logo && (
+                  <div className="w-12 h-12 mr-4 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0">
+                    <img 
+                      src={cert.organization_logo} 
+                      alt={cert.organization} 
+                      className="w-10 h-10 object-contain"
+                    />
+                  </div>
+                )}
+                
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold">{cert.name}</h3>
+                  <p className="text-blue-600">{cert.organization}</p>
+                  
+                  <div className="flex items-center text-sm text-gray-600 mt-2 mb-2">
+                    <svg className="h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span>Issued: {formatDate(cert.issue_date)}</span>
+                    
+                    {cert.expiry_date && (
+                      <span className="ml-4">Expires: {formatDate(cert.expiry_date)}</span>
+                    )}
+                  </div>
+                  
+                  {cert.credential_id && (
+                    <p className="text-sm text-gray-600 mb-2">
+                      Credential ID: {cert.credential_id}
+                    </p>
+                  )}
+                  
+                  {cert.description && (
+                    <p className="text-gray-700 text-sm mb-3">{cert.description}</p>
+                  )}
+                  
+                  {cert.credential_url && (
+                    <a
+                      href={cert.credential_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
+                    >
+                      <span>See credential</span>
+                      <svg className="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </a>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+    </div>
+  );
+}
