@@ -54,14 +54,12 @@ export default function SectionEditor({ tableName, initialData, fields, onSucces
       const fileName = `${Date.now()}.${fileExt}`;
       const filePath = `${tableName}/${fileName}`;
       
+      
       const { error: uploadError } = await supabase.storage
-        .from('public')
+        .from('portfolio-assets')
         .upload(filePath, file);
-      
-      if (uploadError) throw uploadError;
-      
-      // Get public URL
-      const { data } = supabase.storage.from('public').getPublicUrl(filePath);
+        
+      const { data } = supabase.storage.from('portfolio-assets').getPublicUrl(filePath);
       
       setFormData((prev: Record<string, unknown>) => ({ ...prev, [fieldName]: data.publicUrl }));
     } catch (err: any) {
