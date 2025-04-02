@@ -51,20 +51,20 @@ export default function Home() {
         <CertificationsSection />
       </section>
       
-      <section id="volunteering" className="py-20">
-        <VolunteeringSection />
-      </section>
-      
-      <section id="awards" className="py-20 bg-gray-50">
+      <section id="awards" className="py-20">
         <AwardsSection />
       </section>
       
-      <section id="languages" className="py-20">
+      <section id="languages" className="py-20 bg-gray-50">
         <LanguagesSection />
       </section>
       
-      <section id="organizations" className="py-20 bg-gray-50">
+      <section id="organizations" className="py-20">
         <OrganizationsSection />
+      </section>
+      
+      <section id="volunteering" className="py-20 bg-gray-50">
+        <VolunteeringSection />
       </section>
       
       <section id="contact" className="py-20">
