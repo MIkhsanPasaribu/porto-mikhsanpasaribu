@@ -35,7 +35,6 @@ export default function Home() {
         <ExperiencesSection />
       </section>
       
-      {/* Rest of your sections */}
       <section id="projects" className="py-20">
         <ProjectsSection />
       </section>
