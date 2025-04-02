@@ -66,7 +66,7 @@ export default function Navbar() {
       className={`fixed w-full z-50 transition-all duration-300 ${
         isScrolled 
           ? isDarkMode 
-            ? 'bg-black shadow-lg shadow-gray-800/20' 
+            ? 'bg-slate-900 shadow-lg shadow-slate-900/30' 
             : 'bg-white shadow-md'
           : 'bg-transparent'
       } ${isScrolled ? 'py-2' : 'py-4'}`}
@@ -82,7 +82,7 @@ export default function Navbar() {
               className={`font-bold text-xl transition-colors ${
                 isScrolled 
                   ? isDarkMode 
-                    ? 'text-white' 
+                    ? 'text-sky-300' 
                     : 'text-gray-900' 
                   : 'text-white'
               }`}
@@ -101,7 +101,7 @@ export default function Navbar() {
                   className={`px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-opacity-20 ${
                     isScrolled 
                       ? isDarkMode
-                        ? 'text-gray-300 hover:text-white hover:bg-blue-900' 
+                        ? 'text-slate-300 hover:text-sky-300 hover:bg-slate-800' 
                         : 'text-gray-700 hover:text-blue-600 hover:bg-cream-50'
                       : 'text-gray-200 hover:text-white hover:bg-white hover:bg-opacity-10'
                   }`}
@@ -119,7 +119,7 @@ export default function Navbar() {
               className={`inline-flex items-center justify-center p-2 rounded-md ${
                 isScrolled 
                   ? isDarkMode
-                    ? 'text-gray-300 hover:text-white hover:bg-blue-900' 
+                    ? 'text-slate-300 hover:text-sky-300 hover:bg-slate-800' 
                     : 'text-gray-700 hover:text-blue-600 hover:bg-cream-50'
                   : 'text-gray-200 hover:text-white hover:bg-white hover:bg-opacity-10'
               } focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500`}
@@ -146,7 +146,7 @@ export default function Navbar() {
           <motion.div 
             ref={mobileMenuRef}
             className={`md:hidden ${
-              isDarkMode ? 'bg-black' : 'bg-white'
+              isDarkMode ? 'bg-slate-900' : 'bg-white'
             } shadow-lg`}
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
@@ -161,7 +161,7 @@ export default function Navbar() {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`block px-3 py-2 rounded-md text-base font-medium ${
                     isDarkMode
-                      ? 'text-gray-300 hover:text-white hover:bg-blue-900' 
+                      ? 'text-slate-300 hover:text-sky-300 hover:bg-slate-800' 
                       : 'text-gray-700 hover:text-blue-600 hover:bg-cream-50'
                   }`}
                 >

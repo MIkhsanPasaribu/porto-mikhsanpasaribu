@@ -17,7 +17,7 @@ export default function ThemeSwitcher() {
         className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-colors ${
           theme === 'light' 
             ? 'bg-blue-600 text-white hover:bg-blue-700' 
-            : 'bg-blue-500 text-white hover:bg-blue-600'
+            : 'bg-sky-500 text-white hover:bg-sky-600'
         }`}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
@@ -38,7 +38,7 @@ export default function ThemeSwitcher() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="absolute bottom-16 right-0 bg-white dark:bg-gray-900 rounded-lg shadow-xl p-3 flex flex-col gap-2 min-w-[150px]"
+            className="absolute bottom-16 right-0 bg-white dark:bg-slate-800 rounded-lg shadow-xl p-3 flex flex-col gap-2 min-w-[150px]"
             initial={{ opacity: 0, y: 10, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.9 }}
@@ -49,7 +49,7 @@ export default function ThemeSwitcher() {
               className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
                 theme === 'light' 
                   ? 'bg-cream-100 text-blue-700' 
-                  : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200'
+                  : 'hover:bg-slate-700 text-gray-800 dark:text-slate-200'
               }`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -62,8 +62,8 @@ export default function ThemeSwitcher() {
               onClick={() => { setTheme('dark'); setIsOpen(false); }}
               className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
                 theme === 'dark' 
-                  ? 'bg-blue-900 text-blue-100' 
-                  : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200'
+                  ? 'bg-sky-900 text-sky-100' 
+                  : 'hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-800 dark:text-slate-200'
               }`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
