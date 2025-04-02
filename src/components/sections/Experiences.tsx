@@ -1,24 +1,29 @@
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { supabase } from '@/lib/supabase';
+import { supabase, handleAuthError } from '@/lib/supabase';
+import { useTheme } from '@/lib/ThemeContext';
 
 interface Experience {
+  technologies: string[];
   id: number;
   company: string;
   position: string;
-  location: string;
   start_date: string;
   end_date: string | null;
   description: string;
-  technologies: string[];
   company_logo: string | null;
+  location: string;
 }
 
 export default function ExperiencesSection() {
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [loading, setLoading] = useState(true);
+  const { theme } = useTheme();
+  const isDarkMode = theme === 'dark';
   
   useEffect(() => {
     const fetchExperiences = async () => {
@@ -28,9 +33,22 @@ export default function ExperiencesSection() {
           .select('*')
           .order('start_date', { ascending: false });
         
-        if (error) throw error;
+        // Handle empty error objects
+        if (error && (typeof error === 'object' && Object.keys(error).length > 0)) {
+          // Try to handle auth error
+          if (!await handleAuthError(error)) {
+            throw new Error('Authentication error, please refresh the page');
+          }
+          throw error;
+        }
         
-        setExperiences(data || []);
+        // If we have data, use it
+        if (data && Array.isArray(data)) {
+          setExperiences(data);
+        } else {
+          // If no data or data is not an array, use fallback
+          throw new Error('Invalid data format received');
+        }
       } catch (error) {
         console.error('Error fetching experiences:', error);
         // Fallback data
@@ -38,38 +56,28 @@ export default function ExperiencesSection() {
           {
             id: 1,
             company: 'Tech Innovations Inc.',
-            position: 'Senior Software Engineer',
-            location: 'Jakarta, Indonesia',
-            start_date: '2021-06-01',
+            position: 'Senior Full Stack Developer',
+            start_date: '2021-03-01',
             end_date: null,
-            description: 'Leading the development of AI-powered solutions for enterprise clients. Architecting and implementing scalable web applications using modern technologies. Mentoring junior developers and conducting code reviews.',
-            technologies: ['React', 'Node.js', 'TensorFlow', 'AWS'],
-            company_logo: '/logos/tech-innovations.png'
+            description: 'Leading development of web applications using React, Node.js, and AWS.',
+            company_logo: '/logos/tech-innovations.png',
+            location: 'San Francisco, CA'
           },
           {
             id: 2,
-            company: 'DataSmart Solutions',
-            position: 'Machine Learning Engineer',
-            location: 'Remote',
-            start_date: '2019-03-01',
-            end_date: '2021-05-30',
-            description: 'Developed and deployed machine learning models for predictive analytics. Collaborated with data scientists to improve model accuracy and performance. Built data pipelines for efficient processing of large datasets.',
-            technologies: ['Python', 'PyTorch', 'Scikit-learn', 'Docker'],
-            company_logo: '/logos/datasmart.png'
-          },
-          {
-            id: 3,
-            company: 'WebFront Systems',
-            position: 'Frontend Developer',
-            location: 'Bandung, Indonesia',
-            start_date: '2017-09-01',
-            end_date: '2019-02-28',
-            description: 'Developed responsive and interactive user interfaces for web applications. Implemented state management solutions and optimized application performance. Collaborated with UX designers to create intuitive user experiences.',
-            technologies: ['JavaScript', 'React', 'Redux', 'SASS'],
-            company_logo: '/logos/webfront.png'
+            company: 'Digital Solutions Ltd.',
+            position: 'Full Stack Developer',
+            start_date: '2019-06-01',
+            end_date: '2021-02-28',
+            description: 'Developed and maintained web applications using React, Express, and MongoDB.',
+            company_logo: '/logos/digital-solutions.png',
+            location: 'New York, NY'
           }
         ];
-        setExperiences(fallbackExperiences);
+        setExperiences(fallbackExperiences.map(exp => ({
+          ...exp,
+          technologies: [] // Add empty technologies array to match Experience interface
+        })));
       } finally {
         setLoading(false);
       }
@@ -77,7 +85,7 @@ export default function ExperiencesSection() {
     
     fetchExperiences();
   }, []);
-  
+
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'Present';
     
@@ -158,7 +166,7 @@ export default function ExperiencesSection() {
                 <p className="text-gray-700 mb-4">{experience.description}</p>
                 
                 <div className="flex flex-wrap gap-2">
-                  {experience.technologies.map((tech) => (
+                  {experience.technologies?.map((tech: string) => (
                     <span
                       key={tech}
                       className="px-2 py-1 bg-gray-100 text-gray-800 text-xs font-medium rounded"

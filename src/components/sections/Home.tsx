@@ -1,101 +1,99 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useTheme } from '@/lib/ThemeContext';
+import Button from '@/components/ui/Button';
 
 export default function HomeSection() {
-  const [secretClickCount, setSecretClickCount] = useState(0);
-  const [showAdminLink, setShowAdminLink] = useState(false);
-  const router = useRouter();
-  
-  // Reset click count after a timeout
-  useEffect(() => {
-    if (secretClickCount > 0) {
-      const timer = setTimeout(() => {
-        setSecretClickCount(0);
-      }, 3000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [secretClickCount]);
-  
-  // Check for secret click pattern (5 clicks)
-  useEffect(() => {
-    if (secretClickCount >= 5) {
-      setShowAdminLink(true);
-      
-      // Hide admin link after 5 seconds
-      const timer = setTimeout(() => {
-        setShowAdminLink(false);
-      }, 5000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [secretClickCount]);
-  
-  const handleSecretClick = () => {
-    setSecretClickCount(prev => prev + 1);
-  };
+  const { theme } = useTheme();
+  const isDarkMode = theme === 'dark';
   
   return (
-    <div className="absolute inset-0 flex items-center justify-center z-10">
-      <div className="text-center text-white">
-        <motion.h1 
-          className="text-5xl font-bold mb-4 text-shadow-lg cursor-pointer"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          onClick={handleSecretClick}
-        >
-          M. Ikhsan Pasaribu
-        </motion.h1>
-        
+    <div className="relative h-full flex items-center justify-center">
+      <div className="absolute inset-0 z-0">
+        {/* Background gradient */}
+        <div className={`absolute inset-0 ${
+          isDarkMode 
+            ? 'bg-gradient-to-b from-[#000000] via-[#000000]/90 to-[#146C94]/30' 
+            : 'bg-gradient-to-b from-[#F2F7FF] via-[#F2F7FF]/90 to-[#0B409C]/20'
+        }`}></div>
+      </div>
+      
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 z-10">
+        <div className="text-center">
+          <motion.h1 
+            className={`text-4xl sm:text-5xl md:text-6xl font-bold mb-6 ${
+              isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
+            }`}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            M. Ikhsan Pasaribu
+          </motion.h1>
+          
+          <motion.p 
+            className={`text-xl sm:text-2xl md:text-3xl mb-8 ${
+              isDarkMode ? 'text-[#19A7CE]' : 'text-[#0B409C]'
+            }`}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            Full Stack Developer
+          </motion.p>
+          
+          <motion.div
+            className="flex flex-col sm:flex-row justify-center gap-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <Button 
+              variant="primary" 
+              size="lg"
+              onClick={() => {
+                document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              Learn More
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              size="lg"
+              onClick={() => {
+                document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              Contact Me
+            </Button>
+          </motion.div>
+        </div>
+      </div>
+      
+      <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-10">
         <motion.div
+          className="flex flex-col items-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
+          transition={{ duration: 0.5, delay: 0.8 }}
         >
-          <h2 className="text-2xl mb-6 text-shadow-md">Software Developer & AI Enthusiast</h2>
-          
-          <div className="flex justify-center space-x-4">
-            <Link href="#about">
-              <motion.button 
-                className="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                About
-              </motion.button>
-            </Link>
-            
-            <Link href="#contact">
-              <motion.button 
-                className="px-6 py-2 bg-transparent border-2 border-white text-white rounded-full hover:bg-white hover:text-blue-600 transition"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Contact Me
-              </motion.button>
-            </Link>
-          </div>
-          
-          {/* Admin link that appears after secret pattern */}
-          {showAdminLink && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
+          <p className={`text-sm mb-2 ${isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'}`}>Scroll Down</p>
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ repeat: Infinity, duration: 1.5 }}
+          >
+            <svg 
+              className={`w-6 h-6 ${isDarkMode ? 'text-[#19A7CE]' : 'text-[#0B409C]'}`} 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24" 
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <button 
-                onClick={() => router.push('/admin')}
-                className="mt-4 text-sm text-blue-300 hover:text-blue-100"
-              >
-                Admin Access
-              </button>
-            </motion.div>
-          )}
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </motion.div>
         </motion.div>
       </div>
     </div>

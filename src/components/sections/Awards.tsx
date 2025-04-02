@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { supabase } from '@/lib/supabase';
+import { handleAuthError, supabase } from '@/lib/supabase';
 
 interface Award {
   id: number;
@@ -25,9 +25,22 @@ export default function AwardsSection() {
           .select('*')
           .order('date', { ascending: false });
         
-        if (error) throw error;
+        // Handle empty error objects
+        if (error && (typeof error === 'object' && Object.keys(error).length > 0)) {
+          // Try to handle auth error
+          if (!await handleAuthError(error)) {
+            throw new Error('Authentication error, please refresh the page');
+          }
+          throw error;
+        }
         
-        setAwards(data || []);
+        // If we have data, use it
+        if (data && Array.isArray(data)) {
+          setAwards(data);
+        } else {
+          // If no data or data is not an array, use fallback
+          throw new Error('Invalid data format received');
+        }
       } catch (error) {
         console.error('Error fetching awards:', error);
         // Fallback data

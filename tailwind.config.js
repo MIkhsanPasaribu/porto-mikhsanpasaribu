@@ -10,6 +10,21 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Dark mode palette
+        dark: {
+          primary: '#000000',
+          secondary: '#146C94',
+          tertiary: '#19A7CE',
+          background: '#F6F1F1',
+        },
+        // Light mode palette
+        light: {
+          primary: '#F2F7FF',
+          secondary: '#0B409C',
+          tertiary: '#10316B',
+          accent: '#FDBE34',
+        },
+        // Keep existing colors for compatibility
         primary: {
           50: '#f0f9ff',
           100: '#e0f2fe',
@@ -48,8 +63,6 @@ module.exports = {
           800: '#FFB911',
           900: '#F2AB00',
         },
-        black: '#121212',
-        white: '#FFFFFF',
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
@@ -136,5 +149,4 @@ module.exports = {
       addComponents(components)
     },
   ],
-  darkMode: 'class',
 }

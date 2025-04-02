@@ -1,22 +1,25 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { supabase } from '@/lib/supabase';
+import { supabase, handleAuthError } from '@/lib/supabase';
+import { useTheme } from '@/lib/ThemeContext';
 
 interface Skill {
   id: number;
   name: string;
-  proficiency: number;
   category: string;
-  icon: string;
+  proficiency: number;
+  icon: string | null;
 }
 
 export default function SkillsSection() {
   const [skills, setSkills] = useState<Skill[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState('All');
+  const { theme } = useTheme();
+  const isDarkMode = theme === 'dark';
   
   useEffect(() => {
     const fetchSkills = async () => {
@@ -26,34 +29,62 @@ export default function SkillsSection() {
           .select('*')
           .order('proficiency', { ascending: false });
         
-        if (error) throw error;
+        // Handle empty error objects
+        if (error && (typeof error === 'object' && Object.keys(error).length > 0)) {
+          // Try to handle auth error
+          if (!await handleAuthError(error)) {
+            throw new Error('Authentication error, please refresh the page');
+          }
+          throw error;
+        }
         
-        setSkills(data || []);
-        
-        // Extract unique categories
-        const uniqueCategories = ['All', ...new Set(data?.map(skill => skill.category) || [])];
-        setCategories(uniqueCategories);
+        // If we have data, use it
+        if (data && Array.isArray(data)) {
+          setSkills(data);
+          // Extract unique categories
+          const uniqueCategories = [...new Set(data.map(skill => skill.category))];
+          setCategories(uniqueCategories);
+        } else {
+          // If no data or data is not an array, use fallback
+          throw new Error('Invalid data format received');
+        }
       } catch (error) {
         console.error('Error fetching skills:', error);
         // Fallback data
         const fallbackSkills = [
-          { id: 1, name: 'JavaScript', proficiency: 90, category: 'Frontend', icon: 'devicon-javascript-plain' },
-          { id: 2, name: 'React', proficiency: 85, category: 'Frontend', icon: 'devicon-react-original' },
-          { id: 3, name: 'Node.js', proficiency: 80, category: 'Backend', icon: 'devicon-nodejs-plain' },
-          { id: 4, name: 'Python', proficiency: 85, category: 'Programming', icon: 'devicon-python-plain' },
-          { id: 5, name: 'TensorFlow', proficiency: 75, category: 'AI/ML', icon: 'devicon-tensorflow-original' },
-          { id: 6, name: 'SQL', proficiency: 80, category: 'Database', icon: 'devicon-mysql-plain' },
-          { id: 7, name: 'TypeScript', proficiency: 85, category: 'Programming', icon: 'devicon-typescript-plain' },
-          { id: 8, name: 'Next.js', proficiency: 80, category: 'Frontend', icon: 'devicon-nextjs-original' },
-          { id: 9, name: 'Docker', proficiency: 70, category: 'DevOps', icon: 'devicon-docker-plain' },
-          { id: 10, name: 'AWS', proficiency: 75, category: 'Cloud', icon: 'devicon-amazonwebservices-original' },
-          { id: 11, name: 'PyTorch', proficiency: 70, category: 'AI/ML', icon: 'devicon-pytorch-original' },
-          { id: 12, name: 'MongoDB', proficiency: 75, category: 'Database', icon: 'devicon-mongodb-plain' },
+          {
+            id: 1,
+            name: 'React',
+            category: 'Frontend',
+            proficiency: 90,
+            icon: '/icons/react.svg'
+          },
+          {
+            id: 2,
+            name: 'Node.js',
+            category: 'Backend',
+            proficiency: 85,
+            icon: '/icons/nodejs.svg'
+          },
+          {
+            id: 3,
+            name: 'TypeScript',
+            category: 'Languages',
+            proficiency: 80,
+            icon: '/icons/typescript.svg'
+          },
+          {
+            id: 4,
+            name: 'MongoDB',
+            category: 'Database',
+            proficiency: 75,
+            icon: '/icons/mongodb.svg'
+          }
         ];
         setSkills(fallbackSkills);
         
-        // Extract unique categories
-        const uniqueCategories = ['All', ...new Set(fallbackSkills.map(skill => skill.category))];
+        // Extract unique categories from fallback data
+        const uniqueCategories = [...new Set(fallbackSkills.map(skill => skill.category))];
         setCategories(uniqueCategories);
       } finally {
         setLoading(false);
@@ -63,7 +94,8 @@ export default function SkillsSection() {
     fetchSkills();
   }, []);
   
-  const filteredSkills = activeCategory === 'All'
+const [activeCategory, setActiveCategory] = useState('All');
+const filteredSkills = activeCategory === 'All'
     ? skills
     : skills.filter(skill => skill.category === activeCategory);
   

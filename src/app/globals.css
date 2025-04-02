@@ -1,23 +1,25 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f0f9ff; /* Biru sangat muda alih-alih putih */
-  --foreground: #171717;
-  --accent: #0ea5e9;
-  --accent-light: #e0f2fe;
-  --accent-dark: #0369a1;
-  --third: #FFF8E1;
-  --section-alt: #e0f2fe; /* Warna alternatif untuk section */
+  /* Light mode palette */
+  --background: #F2F7FF;
+  --foreground: #10316B;
+  --accent: #0B409C;
+  --accent-light: #0B409C;
+  --accent-dark: #10316B;
+  --third: #FDBE34;
+  --section-alt: #E6EEFF;
 }
 
 .dark {
-  --background: #0f172a; /* Biru gelap alih-alih hitam */
-  --foreground: #e2e8f0; /* Abu-abu terang alih-alih putih */
-  --accent: #38bdf8; /* Biru yang lebih cerah */
-  --accent-light: #0f3460; /* Biru gelap untuk hover */
-  --accent-dark: #7dd3fc; /* Biru muda untuk aksen */
-  --third: #1e293b; /* Warna ketiga yang lebih biru */
-  --section-alt: #1e293b; /* Warna alternatif untuk section dalam dark mode */
+  /* Dark mode palette */
+  --background: #000000;
+  --foreground: #F6F1F1;
+  --accent: #19A7CE;
+  --accent-light: #146C94;
+  --accent-dark: #19A7CE;
+  --third: #146C94;
+  --section-alt: #0A0A0A;
 }
 
 body {
@@ -38,19 +40,19 @@ body {
 
 /* Dark mode styles for various components */
 .dark .bg-white {
-  background-color: #1e293b; /* Biru slate gelap */
+  background-color: #0A0A0A;
 }
 
 .dark .text-gray-700 {
-  color: #cbd5e1; /* Slate-300 */
+  color: #F6F1F1;
 }
 
 .dark .border-gray-200 {
-  border-color: #334155; /* Slate-700 */
+  border-color: #146C94;
 }
 
 .dark .shadow-md {
-  box-shadow: 0 4px 6px -1px rgba(2, 6, 23, 0.5), 0 2px 4px -2px rgba(2, 6, 23, 0.3);
+  box-shadow: 0 4px 6px -1px rgba(20, 108, 148, 0.3), 0 2px 4px -2px rgba(20, 108, 148, 0.2);
 }
 
 /* Light mode specific styles */
@@ -91,22 +93,50 @@ body {
 }
 
 .dark .card {
-  border-color: rgba(203, 213, 225, 0.1);
-  box-shadow: 0 4px 6px -1px rgba(2, 6, 23, 0.4);
-  background-color: #1e293b; /* Biru slate gelap */
+  border-color: rgba(20, 108, 148, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  background-color: #0A0A0A;
 }
 
 /* Dark mode gradient backgrounds */
 .dark .bg-gradient-primary {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background: linear-gradient(135deg, #000000 0%, #146C94 100%);
 }
 
 /* Light mode gradient backgrounds */
 .light .bg-gradient-primary {
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  background: linear-gradient(135deg, #F2F7FF 0%, #0B409C 100%);
 }
 
 /* Dark mode hover effects */
 .dark .hover\:bg-blue-900:hover {
-  background-color: #0f3460;
+  background-color: #146C94;
+}
+
+/* Custom button styles for new color palette */
+.btn-dark-primary {
+  background-color: #19A7CE;
+  color: #F6F1F1;
+}
+
+.btn-dark-primary:hover {
+  background-color: #146C94;
+}
+
+.btn-light-primary {
+  background-color: #0B409C;
+  color: #F2F7FF;
+}
+
+.btn-light-primary:hover {
+  background-color: #10316B;
+}
+
+.btn-light-accent {
+  background-color: #FDBE34;
+  color: #10316B;
+}
+
+.btn-light-accent:hover {
+  background-color: #F0B01F;
 }

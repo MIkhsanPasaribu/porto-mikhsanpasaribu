@@ -16,8 +16,8 @@ export default function ThemeSwitcher() {
       <motion.button
         className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-colors ${
           theme === 'light' 
-            ? 'bg-blue-600 text-white hover:bg-blue-700' 
-            : 'bg-sky-500 text-white hover:bg-sky-600'
+            ? 'bg-[#0B409C] text-white hover:bg-[#10316B]' 
+            : 'bg-[#19A7CE] text-white hover:bg-[#146C94]'
         }`}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
@@ -38,7 +38,11 @@ export default function ThemeSwitcher() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="absolute bottom-16 right-0 bg-sky-100 dark:bg-slate-800 rounded-lg shadow-xl p-3 flex flex-col gap-2 min-w-[150px]"
+            className={`absolute bottom-16 right-0 rounded-lg shadow-xl p-3 flex flex-col gap-2 min-w-[150px] ${
+              theme === 'light' 
+                ? 'bg-[#F2F7FF] border border-[#0B409C]/20' 
+                : 'bg-[#000000] border border-[#146C94]'
+            }`}
             initial={{ opacity: 0, y: 10, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.9 }}
@@ -48,8 +52,8 @@ export default function ThemeSwitcher() {
               onClick={() => { setTheme('light'); setIsOpen(false); }}
               className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
                 theme === 'light' 
-                  ? 'bg-cream-100 text-blue-700' 
-                  : 'hover:bg-slate-700 text-gray-800 dark:text-slate-200'
+                  ? 'bg-[#FDBE34] text-[#10316B]' 
+                  : 'hover:bg-[#146C94] text-[#F6F1F1]'
               }`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -62,8 +66,8 @@ export default function ThemeSwitcher() {
               onClick={() => { setTheme('dark'); setIsOpen(false); }}
               className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
                 theme === 'dark' 
-                  ? 'bg-sky-900 text-sky-100' 
-                  : 'hover:bg-sky-200 dark:hover:bg-slate-700 text-gray-800 dark:text-slate-200'
+                  ? 'bg-[#146C94] text-[#19A7CE]' 
+                  : 'hover:bg-[#FDBE34]/20 text-[#10316B]'
               }`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

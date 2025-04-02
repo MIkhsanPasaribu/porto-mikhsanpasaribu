@@ -4,7 +4,7 @@
 import { JSXElementConstructor, ReactElement, ReactNode, ReactPortal, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { supabase } from '@/lib/supabase';
+import { handleAuthError, supabase } from '@/lib/supabase';
 import SectionList from '@/components/admin/SectionList';
 
 export default function AdminSectionPage() {
@@ -18,10 +18,23 @@ export default function AdminSectionPage() {
   
   useEffect(() => {
     const checkAuth = async () => {
-      const { data } = await supabase.auth.getUser();
-      if (!data.user) {
+      try {
+        const { data, error } = await supabase.auth.getUser();
+        
+        if (error) {
+          // Handle auth error and redirect if needed
+          await handleAuthError(error);
+          router.push('/admin');
+          return;
+        }
+        
+        if (!data.user) {
+          router.push('/admin');
+          return;
+        }
+      } catch (err) {
+        console.error('Auth check error:', err);
         router.push('/admin');
-        return;
       }
     };
     

@@ -1,8 +1,11 @@
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { supabase } from '@/lib/supabase';
+import { supabase, handleAuthError } from '@/lib/supabase';
+import { useTheme } from '@/lib/ThemeContext';
 
 interface Organization {
   id: number;
@@ -11,12 +14,14 @@ interface Organization {
   start_date: string;
   end_date: string | null;
   description: string | null;
-  organization_logo: string | null;
+  logo: string | null;
 }
 
 export default function OrganizationsSection() {
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(true);
+  const { theme } = useTheme();
+  const isDarkMode = theme === 'dark';
   
   useEffect(() => {
     const fetchOrganizations = async () => {
@@ -26,30 +31,43 @@ export default function OrganizationsSection() {
           .select('*')
           .order('start_date', { ascending: false });
         
-        if (error) throw error;
+        // Handle empty error objects
+        if (error && (typeof error === 'object' && Object.keys(error).length > 0)) {
+          // Try to handle auth error
+          if (!await handleAuthError(error)) {
+            throw new Error('Authentication error, please refresh the page');
+          }
+          throw error;
+        }
         
-        setOrganizations(data || []);
+        // If we have data, use it
+        if (data && Array.isArray(data)) {
+          setOrganizations(data);
+        } else {
+          // If no data or data is not an array, use fallback
+          throw new Error('Invalid data format received');
+        }
       } catch (error) {
         console.error('Error fetching organizations:', error);
         // Fallback data
         const fallbackOrganizations = [
           {
             id: 1,
-            name: 'Developer Student Club',
-            role: 'Lead',
-            start_date: '2021-08-01',
-            end_date: '2022-07-31',
-            description: 'Led a team of student developers in creating solutions for local community problems. Organized workshops and hackathons to promote coding skills among students.',
-            organization_logo: '/logos/dsc.png'
+            name: 'Tech Community Network',
+            role: 'Board Member',
+            start_date: '2020-01-01',
+            end_date: null,
+            description: 'Helping organize tech events and mentorship programs for underrepresented groups in tech.',
+            logo: '/logos/tech-community.png'
           },
           {
             id: 2,
-            name: 'Computer Science Society',
-            role: 'Vice President',
-            start_date: '2019-09-01',
-            end_date: '2021-05-31',
-            description: 'Coordinated events and activities for computer science students. Managed relationships with industry partners for sponsorships and career opportunities.',
-            organization_logo: '/logos/cs-society.png'
+            name: 'Developers Association',
+            role: 'Member',
+            start_date: '2018-06-01',
+            end_date: '2019-12-31',
+            description: 'Participated in monthly meetups and contributed to open source projects.',
+            logo: '/logos/dev-association.png'
           }
         ];
         setOrganizations(fallbackOrganizations);
@@ -97,10 +115,10 @@ export default function OrganizationsSection() {
             className="mb-10 bg-white p-6 rounded-lg shadow-md"
           >
             <div className="flex flex-col md:flex-row md:items-center gap-4">
-              {org.organization_logo && (
+              {org.logo && (
                 <div className="flex-shrink-0 w-16 h-16 bg-gray-100 rounded-full overflow-hidden flex items-center justify-center">
                   <img 
-                    src={org.organization_logo} 
+                    src={org.logo}
                     alt={org.name} 
                     className="w-12 h-12 object-contain"
                   />
