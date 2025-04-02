@@ -9,7 +9,6 @@ export default function Navbar() {
   const { theme } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -45,15 +44,7 @@ export default function Navbar() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   
-  // Check for dark mode preference - FIXED: Only run on client side
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setIsDarkMode(
-        theme === 'dark' || 
-        (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
-      );
-    }
-  }, [theme]);
+  const isDarkMode = theme === 'dark';
   
   const navLinks = [
     { name: 'Home', href: '#home' },
@@ -75,7 +66,7 @@ export default function Navbar() {
       className={`fixed w-full z-50 transition-all duration-300 ${
         isScrolled 
           ? isDarkMode 
-            ? 'bg-gray-900 shadow-lg shadow-gray-800/20' 
+            ? 'bg-black shadow-lg shadow-gray-800/20' 
             : 'bg-white shadow-md'
           : 'bg-transparent'
       } ${isScrolled ? 'py-2' : 'py-4'}`}
@@ -110,8 +101,8 @@ export default function Navbar() {
                   className={`px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-opacity-20 ${
                     isScrolled 
                       ? isDarkMode
-                        ? 'text-gray-300 hover:text-white hover:bg-gray-700' 
-                        : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
+                        ? 'text-gray-300 hover:text-white hover:bg-blue-900' 
+                        : 'text-gray-700 hover:text-blue-600 hover:bg-cream-50'
                       : 'text-gray-200 hover:text-white hover:bg-white hover:bg-opacity-10'
                   }`}
                 >
@@ -128,8 +119,8 @@ export default function Navbar() {
               className={`inline-flex items-center justify-center p-2 rounded-md ${
                 isScrolled 
                   ? isDarkMode
-                    ? 'text-gray-300 hover:text-white hover:bg-gray-700' 
-                    : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
+                    ? 'text-gray-300 hover:text-white hover:bg-blue-900' 
+                    : 'text-gray-700 hover:text-blue-600 hover:bg-cream-50'
                   : 'text-gray-200 hover:text-white hover:bg-white hover:bg-opacity-10'
               } focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500`}
               aria-expanded="false"
@@ -155,7 +146,7 @@ export default function Navbar() {
           <motion.div 
             ref={mobileMenuRef}
             className={`md:hidden ${
-              isDarkMode ? 'bg-gray-900' : 'bg-white'
+              isDarkMode ? 'bg-black' : 'bg-white'
             } shadow-lg`}
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
@@ -170,8 +161,8 @@ export default function Navbar() {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`block px-3 py-2 rounded-md text-base font-medium ${
                     isDarkMode
-                      ? 'text-gray-300 hover:text-white hover:bg-gray-700' 
-                      : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
+                      ? 'text-gray-300 hover:text-white hover:bg-blue-900' 
+                      : 'text-gray-700 hover:text-blue-600 hover:bg-cream-50'
                   }`}
                 >
                   {link.name}
