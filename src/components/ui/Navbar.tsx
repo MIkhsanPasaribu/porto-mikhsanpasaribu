@@ -9,6 +9,7 @@ export default function Navbar() {
   const { theme } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -44,6 +45,16 @@ export default function Navbar() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   
+  // Check for dark mode preference - FIXED: Only run on client side
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsDarkMode(
+        theme === 'dark' || 
+        (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+      );
+    }
+  }, [theme]);
+  
   const navLinks = [
     { name: 'Home', href: '#home' },
     { name: 'About', href: '#about' },
@@ -59,13 +70,11 @@ export default function Navbar() {
     { name: 'Contact', href: '#contact' },
   ];
   
-  const isDark = theme === 'dark' || (theme === 'system' && window?.matchMedia?.('(prefers-color-scheme: dark)')?.matches);
-  
   return (
     <motion.nav 
       className={`fixed w-full z-50 transition-all duration-300 ${
         isScrolled 
-          ? isDark 
+          ? isDarkMode 
             ? 'bg-gray-900 shadow-lg shadow-gray-800/20' 
             : 'bg-white shadow-md'
           : 'bg-transparent'
@@ -81,7 +90,7 @@ export default function Navbar() {
               href="#home" 
               className={`font-bold text-xl transition-colors ${
                 isScrolled 
-                  ? isDark 
+                  ? isDarkMode 
                     ? 'text-white' 
                     : 'text-gray-900' 
                   : 'text-white'
@@ -100,7 +109,7 @@ export default function Navbar() {
                   href={link.href}
                   className={`px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-opacity-20 ${
                     isScrolled 
-                      ? isDark
+                      ? isDarkMode
                         ? 'text-gray-300 hover:text-white hover:bg-gray-700' 
                         : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
                       : 'text-gray-200 hover:text-white hover:bg-white hover:bg-opacity-10'
@@ -118,7 +127,7 @@ export default function Navbar() {
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className={`inline-flex items-center justify-center p-2 rounded-md ${
                 isScrolled 
-                  ? isDark
+                  ? isDarkMode
                     ? 'text-gray-300 hover:text-white hover:bg-gray-700' 
                     : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
                   : 'text-gray-200 hover:text-white hover:bg-white hover:bg-opacity-10'
@@ -146,7 +155,7 @@ export default function Navbar() {
           <motion.div 
             ref={mobileMenuRef}
             className={`md:hidden ${
-              isDark ? 'bg-gray-900' : 'bg-white'
+              isDarkMode ? 'bg-gray-900' : 'bg-white'
             } shadow-lg`}
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
@@ -160,7 +169,7 @@ export default function Navbar() {
                   href={link.href}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`block px-3 py-2 rounded-md text-base font-medium ${
-                    isDark
+                    isDarkMode
                       ? 'text-gray-300 hover:text-white hover:bg-gray-700' 
                       : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
                   }`}
