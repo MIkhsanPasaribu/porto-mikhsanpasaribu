@@ -24,6 +24,11 @@ export default function Navbar() {
     { name: 'Projects', href: '#projects' },
     { name: 'Skills', href: '#skills' },
     { name: 'Education', href: '#education' },
+    { name: 'Certifications', href: '#certifications' },
+    { name: 'Awards', href: '#awards' },
+    { name: 'Languages', href: '#languages' },
+    { name: 'Organizations', href: '#organizations' },
+    { name: 'Volunteering', href: '#volunteering' },
     { name: 'Contact', href: '#contact' },
   ];
   

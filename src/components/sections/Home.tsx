@@ -66,7 +66,7 @@ export default function HomeSection() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Explore
+                About
               </motion.button>
             </Link>
             
@@ -80,8 +80,6 @@ export default function HomeSection() {
               </motion.button>
             </Link>
           </div>
-          
-          {/* Menghapus hidden element karena sudah tidak diperlukan */}
           
           {/* Admin link that appears after secret pattern */}
           {showAdminLink && (

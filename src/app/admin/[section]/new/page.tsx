@@ -97,20 +97,21 @@ export default function AdminNewPage() {
       case 'awards':
         return [
           { name: 'title', label: 'Award Title', type: 'text', required: true },
-          { name: 'issuer', label: 'Issuer', type: 'text', required: true },
-          { name: 'date', label: 'Date', type: 'date', required: true },
+          { name: 'issuer', label: 'Issuing Organization', type: 'text', required: true },
+          { name: 'date', label: 'Date Received', type: 'date', required: true },
           { name: 'description', label: 'Description', type: 'textarea' },
           { name: 'issuer_logo', label: 'Issuer Logo', type: 'image' },
         ];
       case 'languages':
         return [
-          { name: 'name', label: 'Language', type: 'text', required: true },
-          { name: 'proficiency', label: 'Proficiency Level', type: 'select', required: true, options: ['Native', 'Fluent', 'Advanced', 'Intermediate', 'Basic'] },
+          { name: 'name', label: 'Language Name', type: 'text', required: true },
+          { name: 'proficiency', label: 'Proficiency Level', type: 'text', required: true },
+          { name: 'order', label: 'Display Order', type: 'number', required: true },
         ];
       case 'organizations':
         return [
           { name: 'name', label: 'Organization Name', type: 'text', required: true },
-          { name: 'role', label: 'Role', type: 'text', required: true },
+          { name: 'role', label: 'Your Role', type: 'text', required: true },
           { name: 'start_date', label: 'Start Date', type: 'date', required: true },
           { name: 'end_date', label: 'End Date', type: 'date' },
           { name: 'description', label: 'Description', type: 'textarea' },
