@@ -41,9 +41,9 @@ export default function HomeSection() {
   
   return (
     <div className="absolute inset-0 flex items-center justify-center z-10">
-      <div className="text-center text-white p-8 bg-black bg-opacity-50 rounded-lg backdrop-blur-sm">
+      <div className="text-center text-white">
         <motion.h1 
-          className="text-5xl font-bold mb-4"
+          className="text-5xl font-bold mb-4 text-shadow-lg"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -56,7 +56,7 @@ export default function HomeSection() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.8 }}
         >
-          <h2 className="text-2xl mb-6">Software Developer & AI Enthusiast</h2>
+          <h2 className="text-2xl mb-6 text-shadow-md">Software Developer & AI Enthusiast</h2>
           
           <div className="flex justify-center space-x-4">
             <Link href="#about">

@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
-import { useEffect } from 'react';
+import Script from 'next/script';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -22,36 +21,37 @@ export default function RootLayout({
       <head>
         {/* DevIcons for skill icons */}
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css" />
-        {/* Suppress hydration warnings */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var observer = new MutationObserver(function(mutations) {
-                    mutations.forEach(function(mutation) {
-                      if (mutation.attributeName === 'cz-shortcut-listen') {
-                        var body = document.body;
-                        if (body.hasAttribute('cz-shortcut-listen')) {
-                          body.removeAttribute('cz-shortcut-listen');
-                        }
-                      }
-                    });
-                  });
-                  
-                  observer.observe(document.body, { 
-                    attributes: true,
-                    attributeFilter: ['cz-shortcut-listen']
-                  });
-                } catch(e) {}
-              })();
-            `,
-          }}
-        />
       </head>
       <body className={`${inter.className} bg-gray-50`}>
         {children}
         <Analytics />
+        
+        {/* Fix for hydration mismatches caused by browser extensions */}
+        <Script id="fix-hydration" strategy="beforeInteractive">
+          {`
+            (function() {
+              // Remove attributes that might cause hydration mismatches
+              if (typeof window !== 'undefined') {
+                const observer = new MutationObserver(function() {
+                  if (document.body) {
+                    const attributesToRemove = ['cz-shortcut-listen', 'data-new-gr-c-s-check-loaded', 'data-gr-ext-installed'];
+                    attributesToRemove.forEach(attr => {
+                      if (document.body.hasAttribute(attr)) {
+                        document.body.removeAttribute(attr);
+                      }
+                    });
+                    observer.disconnect();
+                  }
+                });
+                
+                observer.observe(document.documentElement, {
+                  childList: true,
+                  subtree: true
+                });
+              }
+            })();
+          `}
+        </Script>
       </body>
     </html>
   );

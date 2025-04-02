@@ -13,9 +13,9 @@ import AwardsSection from '@/components/sections/Awards';
 import LanguagesSection from '@/components/sections/Languages';
 import OrganizationsSection from '@/components/sections/Organizations';
 import ContactSection from '@/components/sections/Contact';
-import ThreeScene from '@/components/3d/Scene';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
+import ThreeSceneWrapper from '@/components/3d/ThreeSceneWrapper';
 
 export default function Home() {
   return (
@@ -23,9 +23,7 @@ export default function Home() {
       <Navbar />
       
       <section id="home" className="h-screen relative">
-        <Suspense fallback={<div>Loading 3D scene...</div>}>
-          <ThreeScene />
-        </Suspense>
+        <ThreeSceneWrapper />
         <HomeSection />
       </section>
       
@@ -37,6 +35,7 @@ export default function Home() {
         <ExperiencesSection />
       </section>
       
+      {/* Rest of your sections */}
       <section id="projects" className="py-20">
         <ProjectsSection />
       </section>
