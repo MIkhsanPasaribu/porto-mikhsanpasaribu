@@ -44,28 +44,30 @@ function CodeParticles() {
   return (
     <points ref={particlesRef}>
       <bufferGeometry>
-        <bufferAttribute
+        <bufferAttribute 
+          args={[positions, 3]}
           attach="attributes-position"
           count={count}
-          array={positions}
-          itemSize={3} args={[positions, 3]}        />
-        <bufferAttribute
+          itemSize={3}
+        />
+        <bufferAttribute 
+          args={[colors, 3]}
           attach="attributes-color"
           count={count}
-          array={colors}
-          itemSize={3} args={[colors, 3]}        />
+          itemSize={3}
+        />
       </bufferGeometry>
       <pointsMaterial
         size={0.05}
         vertexColors
         transparent
-        opacity={0.8}
+        opacity={0.6}
+        sizeAttenuation
       />
     </points>
   );
 }
 
-// Floating laptop model
 function Laptop(props: any) {
   const laptopRef = useRef<THREE.Mesh>(null);
   
@@ -100,7 +102,6 @@ function Laptop(props: any) {
   );
 }
 
-// AI Brain visualization
 function AiBrain(props: any) {
   const brainRef = useRef<THREE.Group>(null);
   
@@ -134,6 +135,7 @@ function AiBrain(props: any) {
   );
 }
 
+// Export a single component with a consistent name
 export default function ThreeScene() {
   return (
     <div className="absolute inset-0 z-0">
