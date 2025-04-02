@@ -1,12 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #f0f9ff; /* Biru sangat muda alih-alih putih */
   --foreground: #171717;
   --accent: #0ea5e9;
   --accent-light: #e0f2fe;
   --accent-dark: #0369a1;
   --third: #FFF8E1;
+  --section-alt: #e0f2fe; /* Warna alternatif untuk section */
 }
 
 .dark {
@@ -16,6 +17,7 @@
   --accent-light: #0f3460; /* Biru gelap untuk hover */
   --accent-dark: #7dd3fc; /* Biru muda untuk aksen */
   --third: #1e293b; /* Warna ketiga yang lebih biru */
+  --section-alt: #1e293b; /* Warna alternatif untuk section dalam dark mode */
 }
 
 body {
@@ -23,6 +25,15 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Section backgrounds */
+.section-primary {
+  background-color: var(--background);
+}
+
+.section-alt {
+  background-color: var(--section-alt);
 }
 
 /* Dark mode styles for various components */
@@ -88,6 +99,11 @@ body {
 /* Dark mode gradient backgrounds */
 .dark .bg-gradient-primary {
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+/* Light mode gradient backgrounds */
+.light .bg-gradient-primary {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
 }
 
 /* Dark mode hover effects */

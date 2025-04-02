@@ -27,47 +27,47 @@ export default function Home() {
         <HomeSection />
       </section>
       
-      <section id="about" className="py-20">
+      <section id="about" className="py-20 section-primary">
         <AboutSection />
       </section>
       
-      <section id="experiences" className="py-20 bg-gray-50">
+      <section id="experiences" className="py-20 section-alt">
         <ExperiencesSection />
       </section>
       
-      <section id="projects" className="py-20">
+      <section id="projects" className="py-20 section-primary">
         <ProjectsSection />
       </section>
       
-      <section id="skills" className="py-20 bg-gray-50">
+      <section id="skills" className="py-20 section-alt">
         <SkillsSection />
       </section>
       
-      <section id="education" className="py-20">
+      <section id="education" className="py-20 section-primary">
         <EducationSection />
       </section>
       
-      <section id="certifications" className="py-20 bg-gray-50">
+      <section id="certifications" className="py-20 section-alt">
         <CertificationsSection />
       </section>
       
-      <section id="awards" className="py-20">
+      <section id="awards" className="py-20 section-primary">
         <AwardsSection />
       </section>
       
-      <section id="languages" className="py-20 bg-gray-50">
+      <section id="languages" className="py-20 section-alt">
         <LanguagesSection />
       </section>
       
-      <section id="organizations" className="py-20">
+      <section id="organizations" className="py-20 section-primary">
         <OrganizationsSection />
       </section>
       
-      <section id="volunteering" className="py-20 bg-gray-50">
+      <section id="volunteering" className="py-20 section-alt">
         <VolunteeringSection />
       </section>
       
-      <section id="contact" className="py-20">
+      <section id="contact" className="py-20 section-primary">
         <ContactSection />
       </section>
       

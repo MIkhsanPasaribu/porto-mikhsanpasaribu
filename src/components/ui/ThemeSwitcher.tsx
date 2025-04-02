@@ -38,7 +38,7 @@ export default function ThemeSwitcher() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="absolute bottom-16 right-0 bg-white dark:bg-slate-800 rounded-lg shadow-xl p-3 flex flex-col gap-2 min-w-[150px]"
+            className="absolute bottom-16 right-0 bg-sky-100 dark:bg-slate-800 rounded-lg shadow-xl p-3 flex flex-col gap-2 min-w-[150px]"
             initial={{ opacity: 0, y: 10, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.9 }}
@@ -63,7 +63,7 @@ export default function ThemeSwitcher() {
               className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
                 theme === 'dark' 
                   ? 'bg-sky-900 text-sky-100' 
-                  : 'hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-800 dark:text-slate-200'
+                  : 'hover:bg-sky-200 dark:hover:bg-slate-700 text-gray-800 dark:text-slate-200'
               }`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
