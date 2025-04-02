@@ -43,10 +43,11 @@ export default function HomeSection() {
     <div className="absolute inset-0 flex items-center justify-center z-10">
       <div className="text-center text-white">
         <motion.h1 
-          className="text-5xl font-bold mb-4 text-shadow-lg"
+          className="text-5xl font-bold mb-4 text-shadow-lg cursor-pointer"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
+          onClick={handleSecretClick}
         >
           M. Ikhsan Pasaribu
         </motion.h1>
@@ -80,13 +81,7 @@ export default function HomeSection() {
             </Link>
           </div>
           
-          {/* Hidden element for admin access - temporarily visible */}
-          <div 
-            className="mt-16 text-xs opacity-50 cursor-pointer select-none bg-blue-300 p-4 rounded"
-            onClick={handleSecretClick}
-          >
-            Klik area ini 5 kali untuk memunculkan admin link
-          </div>
+          {/* Menghapus hidden element karena sudah tidak diperlukan */}
           
           {/* Admin link that appears after secret pattern */}
           {showAdminLink && (
