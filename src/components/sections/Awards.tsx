@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { handleAuthError, supabase } from '@/lib/supabase';
 import { useTheme } from '@/lib/ThemeContext';
+import EmptySection from '@/components/ui/EmptySection';
 
 interface Award {
   id: number;
@@ -101,17 +102,9 @@ export default function AwardsSection() {
     );
   }
   
-  // IMPORTANT: Only return null if there are truly no awards
+  // Replace the existing empty state with:
   if (awards.length === 0) {
-    console.log('No awards to display, returning null');
-    return (
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className={`text-3xl font-bold text-center mb-12 ${
-          isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
-        }`}>Awards & Recognition</h2>
-        <p className="text-center text-gray-500">No awards to display.</p>
-      </div>
-    );
+    return <EmptySection title="Awards & Recognition" message="No awards to display." />;
   }
   
   // Rest of the component remains the same

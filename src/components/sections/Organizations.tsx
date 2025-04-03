@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { supabase, handleAuthError } from '@/lib/supabase';
 import { useTheme } from '@/lib/ThemeContext';
+import EmptySection from '@/components/ui/EmptySection';
 
 interface Organization {
   id: number;
@@ -109,17 +110,9 @@ export default function OrganizationsSection() {
     );
   }
   
-  // IMPORTANT: Display a message instead of returning null
+  // Replace the existing empty state with:
   if (organizations.length === 0) {
-    console.log('No organizations to display, showing empty message');
-    return (
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className={`text-3xl font-bold text-center mb-12 ${
-          isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
-        }`}>Organizations</h2>
-        <p className="text-center text-gray-500">No organizations to display.</p>
-      </div>
-    );
+    return <EmptySection title="Organizations" message="No organizations to display." />;
   }
   
   return (

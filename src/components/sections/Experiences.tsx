@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { supabase, handleAuthError } from '@/lib/supabase';
 import { useTheme } from '@/lib/ThemeContext';
+import EmptySection from '@/components/ui/EmptySection';
 
 interface Experience {
   technologies: string[];
@@ -99,6 +100,10 @@ export default function ExperiencesSection() {
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
+  }
+  
+  if (experiences.length === 0) {
+    return <EmptySection title="Experience" message="No work experience to display." />;
   }
   
   return (
