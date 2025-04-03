@@ -1,5 +1,4 @@
 /* eslint-disable @next/next/no-img-element */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -24,12 +23,17 @@ export default function OrganizationsSection() {
   const isDarkMode = theme === 'dark';
   
   useEffect(() => {
+    console.log('OrganizationsSection mounted');
+    
     const fetchOrganizations = async () => {
       try {
+        console.log('Fetching organizations data...');
         const { data, error } = await supabase
           .from('organizations')
           .select('*')
           .order('start_date', { ascending: false });
+        
+        console.log('Organizations data response:', { data, error });
         
         // Handle empty error objects
         if (error && (typeof error === 'object' && Object.keys(error).length > 0)) {
@@ -42,6 +46,7 @@ export default function OrganizationsSection() {
         
         // If we have data, use it
         if (data && Array.isArray(data)) {
+          console.log('Setting organizations data:', data.length, 'items');
           setOrganizations(data);
         } else {
           // If no data or data is not an array, use fallback
@@ -70,6 +75,7 @@ export default function OrganizationsSection() {
             logo: '/logos/dev-association.png'
           }
         ];
+        console.log('Using fallback organizations data');
         setOrganizations(fallbackOrganizations);
       } finally {
         setLoading(false);
@@ -77,7 +83,14 @@ export default function OrganizationsSection() {
     };
     
     fetchOrganizations();
+    
+    return () => {
+      console.log('OrganizationsSection unmounted');
+    };
   }, []);
+  
+  // Add this debug output
+  console.log('OrganizationsSection render state:', { loading, organizationsCount: organizations.length, isDarkMode });
   
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'Present';
@@ -88,57 +101,89 @@ export default function OrganizationsSection() {
   
   if (loading) {
     return (
-      <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-12">Organizations</h2>
-        <div className="flex justify-center">
-          <div className="animate-pulse h-40 w-full max-w-3xl bg-gray-200 rounded-lg"></div>
-        </div>
+      <div className="flex justify-center items-center h-40">
+        <div className={`animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 ${
+          isDarkMode ? 'border-[#19A7CE]' : 'border-[#0B409C]'
+        }`}></div>
       </div>
     );
   }
   
+  // IMPORTANT: Display a message instead of returning null
   if (organizations.length === 0) {
-    return null;
+    console.log('No organizations to display, showing empty message');
+    return (
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 className={`text-3xl font-bold text-center mb-12 ${
+          isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
+        }`}>Organizations</h2>
+        <p className="text-center text-gray-500">No organizations to display.</p>
+      </div>
+    );
   }
   
   return (
-    <div className="container mx-auto px-4">
-      <h2 className="text-3xl font-bold text-center mb-12">Organizations</h2>
-      
-      <div className="max-w-4xl mx-auto">
-        {organizations.map((org, index) => (
-          <motion.div 
-            key={org.id}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-            className="mb-10 bg-white p-6 rounded-lg shadow-md"
-          >
-            <div className="flex flex-col md:flex-row md:items-center gap-4">
-              {org.logo && (
-                <div className="flex-shrink-0 w-16 h-16 bg-gray-100 rounded-full overflow-hidden flex items-center justify-center">
-                  <img 
-                    src={org.logo}
-                    alt={org.name} 
-                    className="w-12 h-12 object-contain"
-                  />
-                </div>
-              )}
-              
-              <div className="flex-grow">
-                <h3 className="text-xl font-bold">{org.role}</h3>
-                <p className="text-gray-700 font-medium">{org.name}</p>
-                <p className="text-gray-500 mb-2">
-                  {formatDate(org.start_date)} - {formatDate(org.end_date)}
-                </p>
-                {org.description && (
-                  <p className="text-gray-600">{org.description}</p>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
+        <h2 className={`text-3xl font-bold text-center mb-12 ${
+          isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
+        }`}>Organizations</h2>
+        
+        <div className="space-y-8">
+          {organizations.map((org) => (
+            <motion.div
+              key={org.id}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              viewport={{ once: true }}
+              className={`p-6 rounded-lg shadow-md ${
+                isDarkMode 
+                  ? 'bg-[#0A0A0A] border border-[#146C94]/30' 
+                  : 'bg-[#F2F7FF] border border-[#0B409C]/10'
+              }`}
+            >
+              <div className="flex flex-col md:flex-row md:items-center">
+                {org.logo && (
+                  <div className="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
+                    <div className="w-16 h-16 relative">
+                      <img
+                        src={org.logo}
+                        alt={`${org.name} logo`}
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                  </div>
                 )}
+                
+                <div className="flex-grow">
+                  <h3 className={`text-xl font-semibold ${
+                    isDarkMode ? 'text-[#19A7CE]' : 'text-[#0B409C]'
+                  }`}>{org.name}</h3>
+                  <p className={`text-lg font-medium ${
+                    isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
+                  }`}>{org.role}</p>
+                  <p className={`text-sm ${
+                    isDarkMode ? 'text-[#F6F1F1]/70' : 'text-[#10316B]/70'
+                  }`}>
+                    {formatDate(org.start_date)} - {formatDate(org.end_date)}
+                  </p>
+                  {org.description && (
+                    <p className={`mt-2 ${
+                      isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
+                    }`}>{org.description}</p>
+                  )}
+                </div>
               </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
     </div>
   );
 }
