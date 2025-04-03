@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -7,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/lib/ThemeContext';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 interface SectionStats {
   name: string;
@@ -82,79 +82,217 @@ export default function AdminDashboard() {
     fetchStats();
   }, [isAuthenticated]);
   
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push('/admin');
-  };
-  
-  if (loading) {
+  if (!isAuthenticated) {
     return (
-      <div className="flex justify-center items-center h-40">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Please log in to access the admin dashboard</h1>
+          <button
+            onClick={() => router.push('/admin')}
+            className={`px-4 py-2 rounded-md ${
+              isDarkMode 
+                ? 'bg-[#19A7CE] hover:bg-[#146C94] text-white' 
+                : 'bg-[#0B409C] hover:bg-[#10316B] text-white'
+            }`}
+          >
+            Go to Login
+          </button>
+        </div>
       </div>
     );
   }
   
   return (
-    <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-      <div className="px-4 py-6 sm:px-0">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-          
-          <button
-            onClick={handleSignOut}
-            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-          >
-            Sign Out
-          </button>
-        </div>
-        
-        <div className="bg-white overflow-hidden shadow rounded-lg divide-y divide-gray-200 mb-8">
-          <div className="px-4 py-5 sm:px-6">
-            <h2 className="text-lg font-medium text-gray-900">Welcome, {user?.email}</h2>
-            <p className="mt-1 text-sm text-gray-500">
-              Manage your portfolio content from this dashboard.
-            </p>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {stats.map((stat) => (
-            <Link
-              key={stat.name}
-              href={stat.route}
-              className="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow"
+    <div className={`p-6 ${isDarkMode ? 'bg-[#000000]' : 'bg-[#F2F7FF]'}`}>
+      <div className="mb-8">
+        <motion.h1 
+          className={`text-3xl font-bold ${isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'}`}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          Admin Dashboard
+        </motion.h1>
+        <motion.p 
+          className={`mt-2 ${isDarkMode ? 'text-[#F6F1F1]/80' : 'text-[#10316B]/80'}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          Welcome back, {user?.email}
+        </motion.p>
+      </div>
+      
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <div 
+              key={i} 
+              className={`rounded-lg p-6 h-32 animate-pulse ${
+                isDarkMode 
+                  ? 'bg-[#0A0A0A] border border-[#146C94]/20' 
+                  : 'bg-white border border-[#0B409C]/10'
+              }`}
             >
-              <div className="px-4 py-5 sm:p-6">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0 bg-blue-500 rounded-md p-3">
-                    <svg className="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={stat.icon} />
-                    </svg>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dt className="text-sm font-medium text-gray-500 truncate">
-                      {stat.name}
-                    </dt>
-                    <dd className="flex items-baseline">
-                      <div className="text-2xl font-semibold text-gray-900">
-                        {stat.count}
-                      </div>
-                    </dd>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-gray-50 px-4 py-4 sm:px-6">
-                <div className="text-sm">
-                  <div className="font-medium text-blue-600 hover:text-blue-500">
-                    View all<span className="sr-only"> {stat.name}</span>
-                  </div>
-                </div>
-              </div>
-            </Link>
+              <div className={`h-4 w-24 rounded ${isDarkMode ? 'bg-[#146C94]/30' : 'bg-[#0B409C]/20'}`}></div>
+              <div className={`h-8 w-16 rounded mt-4 ${isDarkMode ? 'bg-[#146C94]/30' : 'bg-[#0B409C]/20'}`}></div>
+            </div>
           ))}
         </div>
-      </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {stats.map((stat, index) => (
+            <motion.div
+              key={stat.name}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
+            >
+              <Link href={stat.route}>
+                <div 
+                  className={`rounded-lg p-6 h-full transition-all duration-300 transform hover:scale-105 hover:shadow-xl ${
+                    isDarkMode 
+                      ? 'bg-[#0A0A0A] border border-[#146C94]/20 hover:border-[#19A7CE]/50 shadow-[0_4px_12px_rgba(20,108,148,0.15)]' 
+                      : 'bg-white border border-[#0B409C]/10 hover:border-[#0B409C]/30 shadow-[0_4px_12px_rgba(11,64,156,0.08)]'
+                  }`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h2 className={`text-lg font-semibold ${isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'}`}>
+                        {stat.name}
+                      </h2>
+                      <p className={`text-3xl font-bold mt-2 ${
+                        isDarkMode 
+                          ? 'text-[#19A7CE]' 
+                          : 'text-[#0B409C]'
+                      }`}>
+                        {stat.count}
+                      </p>
+                    </div>
+                    <div className={`p-3 rounded-full ${
+                      isDarkMode 
+                        ? 'bg-[#146C94]/20 text-[#19A7CE]' 
+                        : 'bg-[#0B409C]/10 text-[#0B409C]'
+                    }`}>
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        className="h-6 w-6" 
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={stat.icon} />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className={`mt-4 text-sm ${
+                    isDarkMode 
+                      ? 'text-[#F6F1F1]/60' 
+                      : 'text-[#10316B]/60'
+                  }`}>
+                    Click to manage {stat.name.toLowerCase()}
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+          
+          {/* Add New Content Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: stats.length * 0.1 }}
+          >
+            <div 
+              className={`rounded-lg p-6 h-full border-2 border-dashed transition-all duration-300 flex flex-col items-center justify-center cursor-pointer hover:scale-105 ${
+                isDarkMode 
+                  ? 'border-[#146C94]/30 hover:border-[#19A7CE]/60 text-[#19A7CE]' 
+                  : 'border-[#0B409C]/20 hover:border-[#0B409C]/40 text-[#0B409C]'
+              }`}
+              onClick={() => router.push('/admin/new-content')}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
+              </svg>
+              <p className={`font-medium ${
+                isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
+              }`}>
+                Add New Content
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      )}
+      
+      {/* Quick Actions Section */}
+      <motion.div
+        className="mt-12"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
+      >
+        <h2 className={`text-xl font-bold mb-4 ${isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'}`}>
+          Quick Actions
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <button 
+            onClick={() => router.push('/admin/projects/new')}
+            className={`p-4 rounded-lg flex items-center transition-colors ${
+              isDarkMode 
+                ? 'bg-[#0A0A0A] hover:bg-[#146C94]/20 text-[#F6F1F1] border border-[#146C94]/20' 
+                : 'bg-white hover:bg-[#0B409C]/5 text-[#10316B] border border-[#0B409C]/10'
+            }`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-2 ${isDarkMode ? 'text-[#19A7CE]' : 'text-[#0B409C]'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Add New Project
+          </button>
+          
+          <button 
+            onClick={() => router.push('/admin/experiences/new')}
+            className={`p-4 rounded-lg flex items-center transition-colors ${
+              isDarkMode 
+                ? 'bg-[#0A0A0A] hover:bg-[#146C94]/20 text-[#F6F1F1] border border-[#146C94]/20' 
+                : 'bg-white hover:bg-[#0B409C]/5 text-[#10316B] border border-[#0B409C]/10'
+            }`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-2 ${isDarkMode ? 'text-[#19A7CE]' : 'text-[#0B409C]'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            Add Experience
+          </button>
+          
+          <button 
+            onClick={() => router.push('/admin/skills/new')}
+            className={`p-4 rounded-lg flex items-center transition-colors ${
+              isDarkMode 
+                ? 'bg-[#0A0A0A] hover:bg-[#146C94]/20 text-[#F6F1F1] border border-[#146C94]/20' 
+                : 'bg-white hover:bg-[#0B409C]/5 text-[#10316B] border border-[#0B409C]/10'
+            }`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-2 ${isDarkMode ? 'text-[#19A7CE]' : 'text-[#0B409C]'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            Add Skill
+          </button>
+          
+          <button 
+            onClick={() => router.push('/')}
+            className={`p-4 rounded-lg flex items-center transition-colors ${
+              isDarkMode 
+                ? 'bg-[#0A0A0A] hover:bg-[#146C94]/20 text-[#F6F1F1] border border-[#146C94]/20' 
+                : 'bg-white hover:bg-[#0B409C]/5 text-[#10316B] border border-[#0B409C]/10'
+            }`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-2 ${isDarkMode ? 'text-[#19A7CE]' : 'text-[#0B409C]'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            View Website
+          </button>
+        </div>
+      </motion.div>
     </div>
   );
 }
