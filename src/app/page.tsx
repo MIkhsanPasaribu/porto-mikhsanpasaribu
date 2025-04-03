@@ -32,7 +32,7 @@ export default function Home() {
     <div className="min-h-screen">
       <Navbar />
       
-      <section id="home" className="h-screen relative">
+      <section id="home" className="h-screen relative overflow-hidden">
         <ErrorBoundary fallback={<div className="h-screen flex items-center justify-center">Failed to load 3D scene</div>}>
           <ThreeSceneWrapper />
         </ErrorBoundary>

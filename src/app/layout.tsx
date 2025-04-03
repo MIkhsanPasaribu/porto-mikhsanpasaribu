@@ -5,6 +5,7 @@ import { Analytics } from '@vercel/analytics/react';
 import Script from 'next/script';
 import { ThemeProvider } from '@/lib/ThemeContext';
 import ThemeSwitcher from '@/components/ui/ThemeSwitcher';
+import AdminBubble from '@/components/admin/AdminBubble';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -28,6 +29,7 @@ export default function RootLayout({
         <ThemeProvider>
           {children}
           <ThemeSwitcher />
+          <AdminBubble />
           <Analytics />
           
           {/* Fix for hydration mismatches caused by browser extensions */}

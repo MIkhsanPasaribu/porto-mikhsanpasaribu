@@ -11,19 +11,23 @@ export default function HomeSection() {
   return (
     <div className="relative h-full flex items-center justify-center">
       <div className="absolute inset-0 z-0">
-        {/* Background gradient */}
+        {/* Further reduced opacity gradient for better 3D visibility */}
         <div className={`absolute inset-0 ${
           isDarkMode 
-            ? 'bg-gradient-to-b from-[#000000] via-[#000000]/90 to-[#146C94]/30' 
-            : 'bg-gradient-to-b from-[#F2F7FF] via-[#F2F7FF]/90 to-[#0B409C]/20'
+            ? 'bg-gradient-to-b from-[#000000]/60 via-[#000000]/40 to-transparent' 
+            : 'bg-gradient-to-b from-[#F2F7FF]/60 via-[#F2F7FF]/40 to-transparent'
         }`}></div>
       </div>
+      
+      {/* Removed the semi-transparent overlay to make 3D elements more visible */}
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 z-10">
         <div className="text-center">
           <motion.h1 
             className={`text-4xl sm:text-5xl md:text-6xl font-bold mb-6 ${
-              isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
+              isDarkMode 
+                ? 'text-[#F6F1F1] drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]' 
+                : 'text-[#10316B] drop-shadow-[0_2px_8px_rgba(255,255,255,0.7)]'
             }`}
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -34,7 +38,9 @@ export default function HomeSection() {
           
           <motion.p 
             className={`text-xl sm:text-2xl md:text-3xl mb-8 ${
-              isDarkMode ? 'text-[#19A7CE]' : 'text-[#0B409C]'
+              isDarkMode 
+                ? 'text-[#19A7CE] drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]' 
+                : 'text-[#0B409C] drop-shadow-[0_2px_8px_rgba(255,255,255,0.7)]'
             }`}
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -72,26 +78,55 @@ export default function HomeSection() {
         </div>
       </div>
       
-      <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-10">
-        <motion.div
-          className="flex flex-col items-center"
+      {/* Enhanced scroll indicator with better alignment and animation */}
+      <div className="absolute bottom-10 left-0 right-0 flex justify-center z-20">
+        <motion.div 
+          className="text-center flex flex-col items-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.8 }}
+          transition={{ delay: 1, duration: 1 }}
         >
-          <p className={`text-sm mb-2 ${isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'}`}>Scroll Down</p>
+          <motion.p 
+            className={`text-sm mb-2 font-medium ${
+              isDarkMode 
+                ? 'text-[#F6F1F1] drop-shadow-[0_2px_4px_rgba(0,0,0,0.7)]' 
+                : 'text-[#10316B] drop-shadow-[0_2px_4px_rgba(255,255,255,0.7)]'
+            }`}
+            animate={{ 
+              opacity: [0.5, 1, 0.5],
+              scale: [1, 1.05, 1]
+            }}
+            transition={{ 
+              repeat: Infinity, 
+              duration: 2
+            }}
+          >
+            Scroll Down
+          </motion.p>
           <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ repeat: Infinity, duration: 1.5 }}
+            animate={{ 
+              y: [0, 10, 0],
+              opacity: [0.7, 1, 0.7]
+            }}
+            transition={{ 
+              repeat: Infinity, 
+              duration: 1.5,
+              ease: "easeInOut"
+            }}
           >
             <svg 
-              className={`w-6 h-6 ${isDarkMode ? 'text-[#19A7CE]' : 'text-[#0B409C]'}`} 
-              fill="none" 
-              stroke="currentColor" 
+              width="24" 
+              height="24" 
               viewBox="0 0 24 24" 
+              fill="none" 
               xmlns="http://www.w3.org/2000/svg"
+              className={`${
+                isDarkMode 
+                  ? 'text-[#19A7CE] drop-shadow-[0_0_8px_rgba(25,167,206,0.7)]' 
+                  : 'text-[#0B409C] drop-shadow-[0_0_8px_rgba(11,64,156,0.7)]'
+              }`}
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              <path d="M7 10l5 5 5-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </motion.div>
         </motion.div>
