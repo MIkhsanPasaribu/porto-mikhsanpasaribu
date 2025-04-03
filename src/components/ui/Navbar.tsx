@@ -68,7 +68,9 @@ export default function Navbar() {
           ? isDarkMode 
             ? 'bg-[#000000] shadow-lg shadow-[#146C94]/30' 
             : 'bg-[#F2F7FF] shadow-md'
-          : 'bg-transparent'
+          : isDarkMode
+            ? 'bg-transparent' 
+            : 'bg-[#F2F7FF]/70 backdrop-blur-sm border-b border-[#FDBE34]/30'
       } ${isScrolled ? 'py-2' : 'py-4'}`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
@@ -84,7 +86,9 @@ export default function Navbar() {
                   ? isDarkMode 
                     ? 'text-[#19A7CE]' 
                     : 'text-[#10316B]' 
-                  : 'text-white'
+                  : isDarkMode
+                    ? 'text-white'
+                    : 'text-[#FDBE34]'
               }`}
             >
               M. Ikhsan Pasaribu
@@ -103,7 +107,9 @@ export default function Navbar() {
                       ? isDarkMode
                         ? 'text-[#F6F1F1] hover:text-[#19A7CE] hover:bg-[#146C94]' 
                         : 'text-[#10316B] hover:text-[#0B409C] hover:bg-[#FDBE34]/20'
-                      : 'text-gray-200 hover:text-white hover:bg-white hover:bg-opacity-10'
+                      : isDarkMode
+                        ? 'text-gray-200 hover:text-white hover:bg-white hover:bg-opacity-10'
+                        : 'text-[#FDBE34] hover:text-[#10316B] hover:bg-[#FDBE34]/30'
                   }`}
                 >
                   {link.name}
@@ -121,7 +127,9 @@ export default function Navbar() {
                   ? isDarkMode
                     ? 'text-[#F6F1F1] hover:text-[#19A7CE] hover:bg-[#146C94]' 
                     : 'text-[#10316B] hover:text-[#0B409C] hover:bg-[#FDBE34]/20'
-                  : 'text-gray-200 hover:text-white hover:bg-white hover:bg-opacity-10'
+                  : isDarkMode
+                    ? 'text-gray-200 hover:text-white hover:bg-white hover:bg-opacity-10'
+                    : 'text-[#FDBE34] hover:text-[#10316B] hover:bg-[#FDBE34]/30'
               } focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#19A7CE] dark:focus:ring-[#0B409C]`}
               aria-expanded="false"
             >
