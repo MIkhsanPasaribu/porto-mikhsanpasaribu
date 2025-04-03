@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { useState } from 'react';
@@ -129,7 +130,7 @@ export default function ContactSection() {
             <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md">
               {success && (
                 <div className="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-                  Your message has been sent successfully! I'll get back to you soon.
+                  Your message has been sent successfully! I&apos;ll get back to you soon.
                 </div>
               )}
               

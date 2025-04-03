@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
+import EmptySection from '@/components/ui/EmptySection';
 
 interface AboutData {
   id: number;
@@ -73,7 +74,13 @@ export default function AboutSection() {
     );
   }
   
+  // Replace this:
   if (!aboutData) return null;
+  
+  // With this:
+  if (!aboutData) {
+    return <EmptySection title="About Me" message="About section information is not available." />;
+  }
   
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

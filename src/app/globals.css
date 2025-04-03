@@ -1,26 +1,142 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Light mode palette */
+  --background: #F2F7FF;
+  --foreground: #10316B;
+  --accent: #0B409C;
+  --accent-light: #0B409C;
+  --accent-dark: #10316B;
+  --third: #FDBE34;
+  --section-alt: #E6EEFF;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  /* Dark mode palette */
+  --background: #000000;
+  --foreground: #F6F1F1;
+  --accent: #19A7CE;
+  --accent-light: #146C94;
+  --accent-dark: #19A7CE;
+  --third: #146C94;
+  --section-alt: #0A0A0A;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Section backgrounds */
+.section-primary {
+  background-color: var(--background);
+}
+
+.section-alt {
+  background-color: var(--section-alt);
+}
+
+/* Dark mode styles for various components */
+.dark .bg-white {
+  background-color: #0A0A0A;
+}
+
+.dark .text-gray-700 {
+  color: #F6F1F1;
+}
+
+.dark .border-gray-200 {
+  border-color: #146C94;
+}
+
+.dark .shadow-md {
+  box-shadow: 0 4px 6px -1px rgba(20, 108, 148, 0.3), 0 2px 4px -2px rgba(20, 108, 148, 0.2);
+}
+
+/* Light mode specific styles */
+.light .bg-cream-50 {
+  background-color: var(--third);
+}
+
+.light .hover\:bg-cream-50:hover {
+  background-color: var(--third);
+}
+
+/* Button styles */
+.btn-primary {
+  background-color: var(--accent);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-dark);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+}
+
+.btn-secondary:hover {
+  background-color: var(--accent-light);
+}
+
+/* Card styles */
+.card {
+  background-color: var(--background);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.dark .card {
+  border-color: rgba(20, 108, 148, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  background-color: #0A0A0A;
+}
+
+/* Dark mode gradient backgrounds */
+.dark .bg-gradient-primary {
+  background: linear-gradient(135deg, #000000 0%, #146C94 100%);
+}
+
+/* Light mode gradient backgrounds */
+.light .bg-gradient-primary {
+  background: linear-gradient(135deg, #F2F7FF 0%, #0B409C 100%);
+}
+
+/* Dark mode hover effects */
+.dark .hover\:bg-blue-900:hover {
+  background-color: #146C94;
+}
+
+/* Custom button styles for new color palette */
+.btn-dark-primary {
+  background-color: #19A7CE;
+  color: #F6F1F1;
+}
+
+.btn-dark-primary:hover {
+  background-color: #146C94;
+}
+
+.btn-light-primary {
+  background-color: #0B409C;
+  color: #F2F7FF;
+}
+
+.btn-light-primary:hover {
+  background-color: #10316B;
+}
+
+.btn-light-accent {
+  background-color: #FDBE34;
+  color: #10316B;
+}
+
+.btn-light-accent:hover {
+  background-color: #F0B01F;
 }

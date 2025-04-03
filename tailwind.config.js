@@ -6,9 +6,25 @@ module.exports = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  darkMode: 'class', // Enable class-based dark mode
   theme: {
     extend: {
       colors: {
+        // Dark mode palette
+        dark: {
+          primary: '#000000',
+          secondary: '#146C94',
+          tertiary: '#19A7CE',
+          background: '#F6F1F1',
+        },
+        // Light mode palette
+        light: {
+          primary: '#F2F7FF',
+          secondary: '#0B409C',
+          tertiary: '#10316B',
+          accent: '#FDBE34',
+        },
+        // Keep existing colors for compatibility
         primary: {
           50: '#f0f9ff',
           100: '#e0f2fe',
@@ -34,6 +50,18 @@ module.exports = {
           800: '#5b21b6',
           900: '#4c1d95',
           950: '#2e1065',
+        },
+        cream: {
+          50: '#FFFDF5',
+          100: '#FFF8E1',
+          200: '#FFEFC4',
+          300: '#FFE6A6',
+          400: '#FFDD88',
+          500: '#FFD46B',
+          600: '#FFCB4D',
+          700: '#FFC22F',
+          800: '#FFB911',
+          900: '#F2AB00',
         },
       },
       fontFamily: {
@@ -121,5 +149,4 @@ module.exports = {
       addComponents(components)
     },
   ],
-  darkMode: 'class',
 }

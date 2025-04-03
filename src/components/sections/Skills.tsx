@@ -1,22 +1,24 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { supabase } from '@/lib/supabase';
+import { supabase, handleAuthError } from '@/lib/supabase';
+import { useTheme } from '@/lib/ThemeContext';
+import EmptySection from '@/components/ui/EmptySection';
 
 interface Skill {
   id: number;
   name: string;
-  proficiency: number;
   category: string;
-  icon: string;
+  proficiency: number;
+  logo: string | null;
 }
 
 export default function SkillsSection() {
   const [skills, setSkills] = useState<Skill[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState('All');
+  const { theme } = useTheme();
+  const isDarkMode = theme === 'dark';
   
   useEffect(() => {
     const fetchSkills = async () => {
@@ -26,35 +28,63 @@ export default function SkillsSection() {
           .select('*')
           .order('proficiency', { ascending: false });
         
-        if (error) throw error;
+        // Handle empty error objects
+        if (error && (typeof error === 'object' && Object.keys(error).length > 0)) {
+          // Try to handle auth error
+          if (!await handleAuthError(error)) {
+            throw new Error('Authentication error, please refresh the page');
+          }
+          throw error;
+        }
         
-        setSkills(data || []);
-        
-        // Extract unique categories
-        const uniqueCategories = ['All', ...new Set(data?.map(skill => skill.category) || [])];
-        setCategories(uniqueCategories);
+        // If we have data, use it
+        if (data && Array.isArray(data)) {
+          setSkills(data);
+        } else {
+          // If no data or data is not an array, use fallback
+          throw new Error('Invalid data format received');
+        }
       } catch (error) {
         console.error('Error fetching skills:', error);
         // Fallback data
         const fallbackSkills = [
-          { id: 1, name: 'JavaScript', proficiency: 90, category: 'Frontend', icon: 'devicon-javascript-plain' },
-          { id: 2, name: 'React', proficiency: 85, category: 'Frontend', icon: 'devicon-react-original' },
-          { id: 3, name: 'Node.js', proficiency: 80, category: 'Backend', icon: 'devicon-nodejs-plain' },
-          { id: 4, name: 'Python', proficiency: 85, category: 'Programming', icon: 'devicon-python-plain' },
-          { id: 5, name: 'TensorFlow', proficiency: 75, category: 'AI/ML', icon: 'devicon-tensorflow-original' },
-          { id: 6, name: 'SQL', proficiency: 80, category: 'Database', icon: 'devicon-mysql-plain' },
-          { id: 7, name: 'TypeScript', proficiency: 85, category: 'Programming', icon: 'devicon-typescript-plain' },
-          { id: 8, name: 'Next.js', proficiency: 80, category: 'Frontend', icon: 'devicon-nextjs-original' },
-          { id: 9, name: 'Docker', proficiency: 70, category: 'DevOps', icon: 'devicon-docker-plain' },
-          { id: 10, name: 'AWS', proficiency: 75, category: 'Cloud', icon: 'devicon-amazonwebservices-original' },
-          { id: 11, name: 'PyTorch', proficiency: 70, category: 'AI/ML', icon: 'devicon-pytorch-original' },
-          { id: 12, name: 'MongoDB', proficiency: 75, category: 'Database', icon: 'devicon-mongodb-plain' },
+          {
+            id: 1,
+            name: 'React',
+            category: 'Frontend',
+            proficiency: 90,
+            logo: '/logos/react.png'
+          },
+          {
+            id: 2,
+            name: 'Node.js',
+            category: 'Backend',
+            proficiency: 85,
+            logo: '/logos/nodejs.png'
+          },
+          {
+            id: 3,
+            name: 'TypeScript',
+            category: 'Languages',
+            proficiency: 80,
+            logo: '/logos/typescript.png'
+          },
+          {
+            id: 4,
+            name: 'MongoDB',
+            category: 'Database',
+            proficiency: 75,
+            logo: '/logos/mongodb.png'
+          },
+          {
+            id: 5,
+            name: 'AWS',
+            category: 'DevOps',
+            proficiency: 70,
+            logo: '/logos/aws.png'
+          }
         ];
         setSkills(fallbackSkills);
-        
-        // Extract unique categories
-        const uniqueCategories = ['All', ...new Set(fallbackSkills.map(skill => skill.category))];
-        setCategories(uniqueCategories);
       } finally {
         setLoading(false);
       }
@@ -63,16 +93,27 @@ export default function SkillsSection() {
     fetchSkills();
   }, []);
   
-  const filteredSkills = activeCategory === 'All'
-    ? skills
-    : skills.filter(skill => skill.category === activeCategory);
+  // Group skills by category
+  const groupedSkills: Record<string, Skill[]> = {};
+  skills.forEach(skill => {
+    if (!groupedSkills[skill.category]) {
+      groupedSkills[skill.category] = [];
+    }
+    groupedSkills[skill.category].push(skill);
+  });
   
   if (loading) {
     return (
       <div className="flex justify-center items-center h-40">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className={`animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 ${
+          isDarkMode ? 'border-[#19A7CE]' : 'border-[#0B409C]'
+        }`}></div>
       </div>
     );
+  }
+  
+  if (Object.keys(groupedSkills).length === 0) {
+    return <EmptySection title="Skills" message="No skills to display." />;
   }
   
   return (
@@ -83,50 +124,66 @@ export default function SkillsSection() {
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
       >
-        <h2 className="text-3xl font-bold text-center mb-12">My Skills</h2>
+        <h2 className={`text-3xl font-bold text-center mb-12 ${
+          isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
+        }`}>Skills</h2>
         
-        {/* Category filters */}
-        <div className="flex flex-wrap justify-center gap-2 mb-10">
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setActiveCategory(category)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                activeCategory === category
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-              }`}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
-        
-        {/* Skills grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredSkills.map((skill) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {Object.entries(groupedSkills).map(([category, categorySkills]) => (
             <motion.div
-              key={skill.id}
+              key={category}
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
               viewport={{ once: true }}
-              className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+              className={`p-6 rounded-lg shadow-md ${
+                isDarkMode 
+                  ? 'bg-[#0A0A0A] border border-[#146C94]/30' 
+                  : 'bg-[#F2F7FF] border border-[#0B409C]/10'
+              }`}
             >
-              <div className="flex items-center mb-4">
-                <i className={`${skill.icon} text-3xl text-blue-600 mr-3`}></i>
-                <h3 className="text-lg font-semibold">{skill.name}</h3>
-              </div>
+              <h3 className={`text-xl font-semibold mb-6 ${
+                isDarkMode ? 'text-[#19A7CE]' : 'text-[#0B409C]'
+              }`}>{category}</h3>
               
-              <div className="w-full bg-gray-200 rounded-full h-2.5">
-                <div 
-                  className="bg-blue-600 h-2.5 rounded-full" 
-                  style={{ width: `${skill.proficiency}%` }}
-                ></div>
-              </div>
-              <div className="flex justify-between mt-2 text-sm text-gray-600">
-                <span>Proficiency</span>
-                <span>{skill.proficiency}%</span>
+              <div className="space-y-6">
+                {categorySkills.map((skill) => (
+                  <div key={skill.id} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        {skill.logo && (
+                          <div className="w-6 h-6 mr-3">
+                            <img
+                              src={skill.logo}
+                              alt={`${skill.name} logo`}
+                              className="w-full h-full object-contain"
+                            />
+                          </div>
+                        )}
+                        <span className={`font-medium ${
+                          isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
+                        }`}>{skill.name}</span>
+                      </div>
+                      <span className={`text-sm ${
+                        isDarkMode ? 'text-[#F6F1F1]/70' : 'text-[#10316B]/70'
+                      }`}>{skill.proficiency}%</span>
+                    </div>
+                    
+                    <div className={`w-full h-2 rounded-full ${
+                      isDarkMode ? 'bg-[#0A0A0A]' : 'bg-[#E5E7EB]'
+                    }`}>
+                      <motion.div
+                        initial={{ width: 0 }}
+                        whileInView={{ width: `${skill.proficiency}%` }}
+                        transition={{ duration: 1, ease: "easeOut" }}
+                        viewport={{ once: true }}
+                        className={`h-full rounded-full ${
+                          isDarkMode ? 'bg-[#19A7CE]' : 'bg-[#0B409C]'
+                        }`}
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
             </motion.div>
           ))}

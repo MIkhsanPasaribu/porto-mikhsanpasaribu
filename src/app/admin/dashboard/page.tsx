@@ -1,10 +1,12 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/hooks/useAuth';
+import { useTheme } from '@/lib/ThemeContext';
+import Link from 'next/link';
 
 interface SectionStats {
   name: string;
@@ -17,23 +19,13 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [stats, setStats] = useState<SectionStats[]>([]);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  const { user, isAuthenticated } = useAuth();
+  const { theme } = useTheme();
+  const isDarkMode = theme === 'dark';
   
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data } = await supabase.auth.getUser();
-      if (!data.user) {
-        router.push('/admin');
-        return;
-      }
-      
-      setUser(data.user);
-    };
+    if (!isAuthenticated) return;
     
-    checkAuth();
-  }, [router]);
-  
-  useEffect(() => {
     const fetchStats = async () => {
       try {
         setLoading(true);
@@ -54,33 +46,41 @@ export default function AdminDashboard() {
         
         // Fetch counts for each section
         const statsPromises = sections.map(async (section) => {
-          const { count, error } = await supabase
-            .from(section.table)
-            .select('*', { count: 'exact', head: true });
-          
-          if (error) throw error;
-          
-          return {
-            name: section.name,
-            count: count || 0,
-            icon: section.icon,
-            route: `/admin/${section.table}`
-          };
+          try {
+            const { count, error } = await supabase
+              .from(section.table)
+              .select('*', { count: 'exact', head: true });
+            
+            if (error) throw error;
+            
+            return {
+              name: section.name,
+              count: count || 0,
+              icon: section.icon,
+              route: `/admin/${section.table}`
+            };
+          } catch (err) {
+            console.error(`Error fetching stats for ${section.name}:`, err);
+            return {
+              name: section.name,
+              count: 0,
+              icon: section.icon,
+              route: `/admin/${section.table}`
+            };
+          }
         });
         
         const statsResults = await Promise.all(statsPromises);
         setStats(statsResults);
       } catch (error) {
-        console.error('Error fetching stats:', error);
+        console.error('Error fetching dashboard stats:', error);
       } finally {
         setLoading(false);
       }
     };
     
-    if (user) {
-      fetchStats();
-    }
-  }, [user]);
+    fetchStats();
+  }, [isAuthenticated]);
   
   const handleSignOut = async () => {
     await supabase.auth.signOut();

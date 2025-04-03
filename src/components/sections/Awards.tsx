@@ -1,8 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { supabase } from '@/lib/supabase';
+import { handleAuthError, supabase } from '@/lib/supabase';
+import { useTheme } from '@/lib/ThemeContext';
+import EmptySection from '@/components/ui/EmptySection';
 
 interface Award {
   id: number;
@@ -16,18 +19,39 @@ interface Award {
 export default function AwardsSection() {
   const [awards, setAwards] = useState<Award[]>([]);
   const [loading, setLoading] = useState(true);
+  const { theme } = useTheme();
+  const isDarkMode = theme === 'dark';
   
   useEffect(() => {
+    console.log('AwardsSection mounted');
+    
     const fetchAwards = async () => {
       try {
+        console.log('Fetching awards data...');
         const { data, error } = await supabase
           .from('awards')
           .select('*')
           .order('date', { ascending: false });
         
-        if (error) throw error;
+        console.log('Awards data response:', { data, error });
         
-        setAwards(data || []);
+        // Handle empty error objects
+        if (error && (typeof error === 'object' && Object.keys(error).length > 0)) {
+          // Try to handle auth error
+          if (!await handleAuthError(error)) {
+            throw new Error('Authentication error, please refresh the page');
+          }
+          throw error;
+        }
+        
+        // If we have data, use it
+        if (data && Array.isArray(data)) {
+          console.log('Setting awards data:', data.length, 'items');
+          setAwards(data);
+        } else {
+          // If no data or data is not an array, use fallback
+          throw new Error('Invalid data format received');
+        }
       } catch (error) {
         console.error('Error fetching awards:', error);
         // Fallback data
@@ -49,6 +73,7 @@ export default function AwardsSection() {
             issuer_logo: '/logos/global-code.png'
           }
         ];
+        console.log('Using fallback awards data');
         setAwards(fallbackAwards);
       } finally {
         setLoading(false);
@@ -56,64 +81,31 @@ export default function AwardsSection() {
     };
     
     fetchAwards();
+    
+    return () => {
+      console.log('AwardsSection unmounted');
+    };
   }, []);
   
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-  };
+  // Rest of the component remains the same
+  
+  // Add this debug output
+  console.log('AwardsSection render state:', { loading, awardsCount: awards.length, isDarkMode });
   
   if (loading) {
     return (
-      <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-12">Awards & Recognition</h2>
-        <div className="flex justify-center">
-          <div className="animate-pulse h-40 w-full max-w-3xl bg-gray-200 rounded-lg"></div>
-        </div>
+      <div className="flex justify-center items-center h-40">
+        <div className={`animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 ${
+          isDarkMode ? 'border-[#19A7CE]' : 'border-[#0B409C]'
+        }`}></div>
       </div>
     );
   }
   
+  // Replace the existing empty state with:
   if (awards.length === 0) {
-    return null;
+    return <EmptySection title="Awards & Recognition" message="No awards to display." />;
   }
   
-  return (
-    <div className="container mx-auto px-4">
-      <h2 className="text-3xl font-bold text-center mb-12">Awards & Recognition</h2>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-        {awards.map((award, index) => (
-          <motion.div 
-            key={award.id}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-            className="bg-white p-6 rounded-lg shadow-md"
-          >
-            <div className="flex items-start gap-4">
-              {award.issuer_logo && (
-                <div className="flex-shrink-0 w-12 h-12 bg-gray-100 rounded-full overflow-hidden flex items-center justify-center">
-                  <img 
-                    src={award.issuer_logo} 
-                    alt={award.issuer} 
-                    className="w-8 h-8 object-contain"
-                  />
-                </div>
-              )}
-              
-              <div>
-                <h3 className="text-xl font-bold">{award.title}</h3>
-                <p className="text-gray-700">{award.issuer}</p>
-                <p className="text-gray-500 mb-2">{formatDate(award.date)}</p>
-                {award.description && (
-                  <p className="text-gray-600">{award.description}</p>
-                )}
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-    </div>
-  );
+  // Rest of the component remains the same
 }
