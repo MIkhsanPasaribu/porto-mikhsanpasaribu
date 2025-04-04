@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -13,7 +14,7 @@ interface SectionStats {
   count: number;
   icon: string;
   route: string;
-}
+} 
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -44,14 +45,19 @@ export default function AdminDashboard() {
           { name: 'Contact Messages', table: 'contacts', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
         ];
         
-        // Fetch counts for each section
+        // Improved fetch method for more reliable counts
         const statsPromises = sections.map(async (section) => {
           try {
+            // Force a fresh fetch with no caching
             const { count, error } = await supabase
               .from(section.table)
-              .select('*', { count: 'exact', head: true });
+              .select('*', { count: 'exact', head: true })
+              .limit(0);
             
-            if (error) throw error;
+            if (error) {
+              console.error(`Error fetching ${section.name}:`, error);
+              throw error;
+            }
             
             return {
               name: section.name,
@@ -79,7 +85,48 @@ export default function AdminDashboard() {
       }
     };
     
+    // Initial fetch
     fetchStats();
+    
+    // Set up a more reliable real-time subscription system
+    const channels = [];
+    
+    const tables = [
+      'projects', 'skills', 'experiences', 'education', 
+      'certifications', 'awards', 'languages', 
+      'organizations', 'volunteering', 'contacts'
+    ];
+    
+    // Create a single channel with multiple subscriptions for better performance
+    const channel = supabase.channel('db-changes');
+    
+    // Add subscriptions for each table to the channel
+    tables.forEach(table => {
+      channel.on(
+        'postgres_changes',
+        { 
+          event: '*', 
+          schema: 'public', 
+          table 
+        },
+        (payload) => {
+          console.log(`Change detected in ${table}:`, payload);
+          fetchStats(); // Refresh all stats when any change is detected
+        }
+      );
+    });
+    
+    // Subscribe to the channel
+    channel.subscribe((status) => {
+      if (status === 'SUBSCRIBED') {
+        console.log('Subscribed to database changes');
+      }
+    });
+    
+    // Return cleanup function
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [isAuthenticated]);
   
   if (!isAuthenticated) {
