@@ -10,7 +10,7 @@ interface Project {
   id: number;
   title: string;
   description: string;
-  image_url: string | null;
+  image_url: string | null; 
   github_url: string | null;
   live_url: string | null;
   technologies: string[];

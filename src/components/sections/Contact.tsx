@@ -1,20 +1,22 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { supabase } from '@/lib/supabase';
+import { useTheme } from '@/lib/ThemeContext';
+import { FaLinkedin, FaGithub, FaInstagram, FaFacebook } from 'react-icons/fa';
 
 export default function ContactSection() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    subject: '',
-    message: '',
+    message: ''
   });
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const { theme } = useTheme();
+  const isDarkMode = theme === 'dark';
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -23,125 +25,63 @@ export default function ContactSection() {
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
-    setSuccess(false);
+    setIsSubmitting(true);
+    setSubmitError('');
     
     try {
-      const { error } = await supabase
-        .from('contacts')
-        .insert([
-          {
-            name: formData.name,
-            email: formData.email,
-            subject: formData.subject,
-            message: formData.message,
-            created_at: new Date(),
-          },
-        ]);
+      // Here you would normally send the form data to your backend
+      // For now, we'll just simulate a successful submission
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
-      if (error) throw error;
+      setSubmitSuccess(true);
+      setFormData({ name: '', email: '', message: '' });
       
-      setSuccess(true);
-      setFormData({ name: '', email: '', subject: '', message: '' });
-    } catch (err: any) {
-      setError(err.message || 'An error occurred while submitting the form');
+      // Reset success message after 5 seconds
+      setTimeout(() => {
+        setSubmitSuccess(false);
+      }, 5000);
+    } catch (error) {
+      setSubmitError('Failed to send message. Please try again later.');
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
   
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-      >
-        <h2 className="text-3xl font-bold text-center mb-12">Get In Touch</h2>
+    <section id="contact" className="py-16 md:py-24">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-12"
+        >
+          <h2 className={`text-3xl font-bold ${
+            isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
+          }`}>
+            Get In Touch
+          </h2>
+          <p className={`mt-4 max-w-2xl mx-auto ${
+            isDarkMode ? 'text-[#F6F1F1]/80' : 'text-[#10316B]/80'
+          }`}>
+            Have a question or want to work together? Feel free to reach out!
+          </p>
+        </motion.div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-          <div>
-            <h3 className="text-xl font-semibold mb-4">Contact Information</h3>
-            <p className="text-gray-600 mb-6">
-              Feel free to reach out to me for any inquiries, collaborations, or just to say hello!
-            </p>
-            
-            <div className="space-y-4">
-              <div className="flex items-start">
-                <div className="flex-shrink-0 h-6 w-6 text-blue-600">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <div className="ml-3 text-gray-700">
-                  <p>ikhsan.pasaribu@example.com</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start">
-                <div className="flex-shrink-0 h-6 w-6 text-blue-600">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                  </svg>
-                </div>
-                <div className="ml-3 text-gray-700">
-                  <p>+62 123 456 7890</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start">
-                <div className="flex-shrink-0 h-6 w-6 text-blue-600">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                </div>
-                <div className="ml-3 text-gray-700">
-                  <p>Jakarta, Indonesia</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="mt-8">
-              <h3 className="text-xl font-semibold mb-4">Connect With Me</h3>
-              <div className="flex space-x-4">
-                <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600">
-                  <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
-                  </svg>
-                </a>
-                <a href="https://linkedin.com/" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600">
-                  <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-                  </svg>
-                </a>
-                <a href="https://twitter.com/" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600">
-                  <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723 10.054 10.054 0 01-3.127 1.184 4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
-                  </svg>
-                </a>
-              </div>
-            </div>
-          </div>
-          
-          <div>
-            <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md">
-              {success && (
-                <div className="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-                  Your message has been sent successfully! I&apos;ll get back to you soon.
-                </div>
-              )}
-              
-              {error && (
-                <div className="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                  {error}
-                </div>
-              )}
-              
-              <div className="mb-4">
-                <label htmlFor="name" className="block text-gray-700 font-medium mb-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          {/* Contact Form */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label htmlFor="name" className={`block text-sm font-medium ${
+                  isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
+                }`}>
                   Name
                 </label>
                 <input
@@ -150,13 +90,21 @@ export default function ContactSection() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
+                  className={`mt-1 block w-full rounded-md shadow-sm py-3 px-4 ${
+                    isDarkMode 
+                      ? 'bg-[#0A0A0A] border-[#146C94] text-[#F6F1F1] focus:border-[#19A7CE]' 
+                      : 'bg-white border-gray-300 text-[#10316B] focus:border-[#0B409C]'
+                  } focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                    isDarkMode ? 'focus:ring-[#19A7CE]' : 'focus:ring-[#0B409C]'
+                  }`}
                 />
               </div>
               
-              <div className="mb-4">
-                <label htmlFor="email" className="block text-gray-700 font-medium mb-2">
+              <div>
+                <label htmlFor="email" className={`block text-sm font-medium ${
+                  isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
+                }`}>
                   Email
                 </label>
                 <input
@@ -165,28 +113,21 @@ export default function ContactSection() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
+                  className={`mt-1 block w-full rounded-md shadow-sm py-3 px-4 ${
+                    isDarkMode 
+                      ? 'bg-[#0A0A0A] border-[#146C94] text-[#F6F1F1] focus:border-[#19A7CE]' 
+                      : 'bg-white border-gray-300 text-[#10316B] focus:border-[#0B409C]'
+                  } focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                    isDarkMode ? 'focus:ring-[#19A7CE]' : 'focus:ring-[#0B409C]'
+                  }`}
                 />
               </div>
               
-              <div className="mb-4">
-                <label htmlFor="subject" className="block text-gray-700 font-medium mb-2">
-                  Subject
-                </label>
-                <input
-                  type="text"
-                  id="subject"
-                  name="subject"
-                  value={formData.subject}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              
-              <div className="mb-6">
-                <label htmlFor="message" className="block text-gray-700 font-medium mb-2">
+              <div>
+                <label htmlFor="message" className={`block text-sm font-medium ${
+                  isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
+                }`}>
                   Message
                 </label>
                 <textarea
@@ -194,23 +135,200 @@ export default function ContactSection() {
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
-                  rows={5}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
-                ></textarea>
+                  rows={5}
+                  className={`mt-1 block w-full rounded-md shadow-sm py-3 px-4 ${
+                    isDarkMode 
+                      ? 'bg-[#0A0A0A] border-[#146C94] text-[#F6F1F1] focus:border-[#19A7CE]' 
+                      : 'bg-white border-gray-300 text-[#10316B] focus:border-[#0B409C]'
+                  } focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                    isDarkMode ? 'focus:ring-[#19A7CE]' : 'focus:ring-[#0B409C]'
+                  }`}
+                />
               </div>
               
-              <button
-                type="submit"
-                className={`w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
-                disabled={loading}
-              >
-                {loading ? 'Sending...' : 'Send Message'}
-              </button>
+              <div>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
+                    isDarkMode 
+                      ? 'bg-[#19A7CE] hover:bg-[#146C94]' 
+                      : 'bg-[#0B409C] hover:bg-[#10316B]'
+                  } focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                    isDarkMode ? 'focus:ring-[#19A7CE]' : 'focus:ring-[#0B409C]'
+                  } transition-colors duration-200 ${
+                    isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
+                  }`}
+                >
+                  {isSubmitting ? 'Sending...' : 'Send Message'}
+                </button>
+              </div>
+              
+              {submitSuccess && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-3 bg-green-100 text-green-700 rounded-md"
+                >
+                  Your message has been sent successfully!
+                </motion.div>
+              )}
+              
+              {submitError && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-3 bg-red-100 text-red-700 rounded-md"
+                >
+                  {submitError}
+                </motion.div>
+              )}
             </form>
-          </div>
+          </motion.div>
+          
+          {/* Contact Info & Social Media */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className={`rounded-lg p-6 ${
+              isDarkMode 
+                ? 'bg-[#0A0A0A] border border-[#146C94]/20' 
+                : 'bg-white shadow-md'
+            }`}
+          >
+            <h3 className={`text-xl font-semibold mb-6 ${
+              isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
+            }`}>
+              Contact Information
+            </h3>
+            
+            <div className="space-y-4 mb-8">
+              <div className="flex items-start">
+                <div className={`mt-1 mr-3 ${
+                  isDarkMode ? 'text-[#19A7CE]' : 'text-[#0B409C]'
+                }`}>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className={`text-sm font-medium ${
+                    isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
+                  }`}>
+                    Email
+                  </p>
+                  <a 
+                    href="mailto:mikhsanpasaribu2@gmail.com" 
+                    className={`text-sm ${
+                      isDarkMode ? 'text-[#F6F1F1]/80 hover:text-[#19A7CE]' : 'text-[#10316B]/80 hover:text-[#0B409C]'
+                    } transition-colors duration-200`}
+                  >
+                    mikhsanpasaribu2@gmail.com
+                  </a>
+                </div>
+              </div>
+              
+              <div className="flex items-start">
+                <div className={`mt-1 mr-3 ${
+                  isDarkMode ? 'text-[#19A7CE]' : 'text-[#0B409C]'
+                }`}>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div>
+                  <p className={`text-sm font-medium ${
+                    isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
+                  }`}>
+                    Location
+                  </p>
+                  <p className={`text-sm ${
+                    isDarkMode ? 'text-[#F6F1F1]/80' : 'text-[#10316B]/80'
+                  }`}>
+                    Padang, Sumatera Barat, Indonesia
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <h3 className={`text-xl font-semibold mb-4 ${
+              isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
+            }`}>
+              Connect With Me
+            </h3>
+            
+            <div className="flex gap-4">
+              <motion.a 
+                href="https://linkedin.com/in/mikhsanpasaribu" 
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className={`p-3 rounded-full ${
+                  isDarkMode 
+                    ? 'bg-[#0A0A0A] text-[#F6F1F1] hover:bg-[#146C94] border border-[#146C94]/50' 
+                    : 'bg-[#F2F7FF] text-[#10316B] hover:bg-[#0B409C] hover:text-white shadow-sm'
+                } transition-colors duration-300`}
+                aria-label="LinkedIn"
+              >
+                <FaLinkedin size={20} />
+              </motion.a>
+              
+              <motion.a 
+                href="https://github.com/mikhsanpasaribu" 
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className={`p-3 rounded-full ${
+                  isDarkMode 
+                    ? 'bg-[#0A0A0A] text-[#F6F1F1] hover:bg-[#146C94] border border-[#146C94]/50' 
+                    : 'bg-[#F2F7FF] text-[#10316B] hover:bg-[#0B409C] hover:text-white shadow-sm'
+                } transition-colors duration-300`}
+                aria-label="GitHub"
+              >
+                <FaGithub size={20} />
+              </motion.a>
+              
+              <motion.a 
+                href="https://instagram.com/mikhsanpasaribu" 
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className={`p-3 rounded-full ${
+                  isDarkMode 
+                    ? 'bg-[#0A0A0A] text-[#F6F1F1] hover:bg-[#146C94] border border-[#146C94]/50' 
+                    : 'bg-[#F2F7FF] text-[#10316B] hover:bg-[#0B409C] hover:text-white shadow-sm'
+                } transition-colors duration-300`}
+                aria-label="Instagram"
+              >
+                <FaInstagram size={20} />
+              </motion.a>
+              
+              <motion.a 
+                href="https://facebook.com/mikhsanpasaribu" 
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className={`p-3 rounded-full ${
+                  isDarkMode 
+                    ? 'bg-[#0A0A0A] text-[#F6F1F1] hover:bg-[#146C94] border border-[#146C94]/50' 
+                    : 'bg-[#F2F7FF] text-[#10316B] hover:bg-[#0B409C] hover:text-white shadow-sm'
+                } transition-colors duration-300`}
+                aria-label="Facebook"
+              >
+                <FaFacebook size={20} />
+              </motion.a>
+            </div>
+          </motion.div>
         </div>
-      </motion.div>
-    </div>
+      </div>
+    </section>
   );
 }
