@@ -67,25 +67,64 @@ export default function AboutSection() {
               
               {/* Floating tech icons */}
               <motion.div 
-                className="absolute -top-5 -left-5 p-3 rounded-full bg-blue-500 text-white"
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
+                className="absolute p-3 rounded-full bg-blue-500 text-white shadow-lg z-10"
+                animate={{ 
+                  x: [50, 100, 50, -50, -100, -50, 50],
+                  y: [-50, 0, 50, 50, 0, -50, -50],
+                  boxShadow: [
+                    '0px 0px 8px rgba(59, 130, 246, 0.5)',
+                    '0px 0px 16px rgba(59, 130, 246, 0.8)',
+                    '0px 0px 8px rgba(59, 130, 246, 0.5)'
+                  ]
+                }}
+                transition={{ 
+                  duration: 15, 
+                  repeat: Infinity, 
+                  repeatType: "loop",
+                  ease: "linear" 
+                }}
               >
                 <HiCode size={24} />
               </motion.div>
               
               <motion.div 
-                className="absolute -bottom-5 -left-5 p-3 rounded-full bg-purple-500 text-white"
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 2, repeat: Infinity, repeatType: "reverse", delay: 0.5 }}
+                className="absolute p-3 rounded-full bg-purple-500 text-white shadow-lg z-10"
+                animate={{ 
+                  x: [-50, -100, -50, 50, 100, 50, -50],
+                  y: [50, 0, -50, -50, 0, 50, 50],
+                  boxShadow: [
+                    '0px 0px 8px rgba(168, 85, 247, 0.5)',
+                    '0px 0px 16px rgba(168, 85, 247, 0.8)',
+                    '0px 0px 8px rgba(168, 85, 247, 0.5)'
+                  ]
+                }}
+                transition={{ 
+                  duration: 18, 
+                  repeat: Infinity, 
+                  repeatType: "loop", 
+                  ease: "linear"
+                }}
               >
                 <HiDatabase size={24} />
               </motion.div>
               
               <motion.div 
-                className="absolute -top-5 -right-5 p-3 rounded-full bg-green-500 text-white"
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 2, repeat: Infinity, repeatType: "reverse", delay: 1 }}
+                className="absolute p-3 rounded-full bg-green-500 text-white shadow-lg z-10"
+                animate={{ 
+                  x: [0, 70, 100, 70, 0, -70, -100, -70, 0],
+                  y: [-100, -70, 0, 70, 100, 70, 0, -70, -100],
+                  boxShadow: [
+                    '0px 0px 8px rgba(34, 197, 94, 0.5)',
+                    '0px 0px 16px rgba(34, 197, 94, 0.8)',
+                    '0px 0px 8px rgba(34, 197, 94, 0.5)'
+                  ]
+                }}
+                transition={{ 
+                  duration: 20, 
+                  repeat: Infinity, 
+                  repeatType: "loop", 
+                  ease: "linear"
+                }}
               >
                 <HiChip size={24} />
               </motion.div>
