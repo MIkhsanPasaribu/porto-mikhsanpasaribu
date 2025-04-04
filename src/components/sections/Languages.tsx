@@ -11,7 +11,6 @@ interface Language {
   name: string;
   proficiency: string;
   flag_icon?: string;
-  display_order?: number; // Add display_order field to the interface
 }
 
 export default function LanguagesSection() {
@@ -27,7 +26,7 @@ export default function LanguagesSection() {
         const { data, error } = await supabase
           .from('languages')
           .select('*')
-          .order('display_order', { ascending: true }); // Changed from 'id' to 'display_order'
+          .order('id', { ascending: true }); // Changed from 'display_order' to 'id'
         
         if (error) {
           console.error('Error fetching languages:', error);
