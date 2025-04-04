@@ -38,9 +38,13 @@ export default function ProjectsSection() {
           throw error;
         }
         
-        if (data) {
+        // Add debugging to see what data is returned
+        console.log('Projects data received:', data);
+        
+        if (data && Array.isArray(data) && data.length > 0) {
           setProjects(data);
         } else {
+          console.log('No projects data found or empty array');
           setProjects([]);
         }
       } catch (error) {

@@ -34,9 +34,13 @@ export default function LanguagesSection() {
           throw error;
         }
         
-        if (data) {
+        // Add debugging to see what data is returned
+        console.log('Languages data received:', data);
+        
+        if (data && Array.isArray(data) && data.length > 0) {
           setLanguages(data);
         } else {
+          console.log('No languages data found or empty array');
           setLanguages([]);
         }
       } catch (error) {

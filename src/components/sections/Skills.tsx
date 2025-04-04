@@ -241,7 +241,7 @@ export default function SkillsSection() {
                                 fill={isDarkMode ? '#F6F1F1' : '#10316B'}
                                 fontWeight="bold"
                               >
-                                {skill.proficiency * 10}%
+                                {skill.proficiency}%
                               </text>
                             </svg>
                           </div>
