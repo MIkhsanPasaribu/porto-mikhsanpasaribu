@@ -97,7 +97,7 @@ export default function SkillsSection() {
   }
   
   return (
-    <section id="skills" className="py-16 md:py-24">
+    <section id="skills" className="py-16 md:py-24 overflow-x-hidden">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className={`text-3xl font-bold text-center mb-12 ${
           isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
@@ -113,7 +113,7 @@ export default function SkillsSection() {
               {category}
             </h3>
             
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
               {skills
                 .filter(skill => skill.category === category)
                 .map((skill, index) => (
@@ -122,7 +122,7 @@ export default function SkillsSection() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: (categoryIndex * 0.1) + (index * 0.05) }}
-                    className={`p-4 rounded-lg flex flex-col items-center text-center ${
+                    className={`p-3 rounded-lg flex flex-col items-center text-center ${
                       isDarkMode 
                         ? 'bg-[#0A0A0A] border border-[#146C94]/20' 
                         : 'bg-white shadow-sm'
@@ -131,7 +131,7 @@ export default function SkillsSection() {
                     {skill.icon && (
                       <div className="text-2xl mb-2">{skill.icon}</div>
                     )}
-                    <h4 className={`font-medium ${
+                    <h4 className={`font-medium text-sm ${
                       isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
                     }`}>
                       {skill.name}
