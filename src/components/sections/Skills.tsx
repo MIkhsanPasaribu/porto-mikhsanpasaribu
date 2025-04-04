@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { supabase, handleAuthError } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { useTheme } from '@/lib/ThemeContext';
 import EmptySection from '@/components/ui/EmptySection';
 
@@ -11,12 +11,14 @@ interface Skill {
   name: string;
   category: string;
   proficiency: number;
-  logo: string | null;
+  icon: string | null;
 }
 
 export default function SkillsSection() {
   const [skills, setSkills] = useState<Skill[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<boolean>(false);
   const { theme } = useTheme();
   const isDarkMode = theme === 'dark';
   
@@ -26,169 +28,128 @@ export default function SkillsSection() {
         const { data, error } = await supabase
           .from('skills')
           .select('*')
+          .order('category')
           .order('proficiency', { ascending: false });
         
-        // Handle empty error objects
-        if (error && (typeof error === 'object' && Object.keys(error).length > 0)) {
-          // Try to handle auth error
-          if (!await handleAuthError(error)) {
-            throw new Error('Authentication error, please refresh the page');
-          }
+        if (error) {
+          console.error('Error fetching skills:', error);
+          setError(true);
           throw error;
         }
         
-        // If we have data, use it
-        if (data && Array.isArray(data)) {
+        if (data) {
           setSkills(data);
+          // Extract unique categories
+          const uniqueCategories = Array.from(new Set(data.map(skill => skill.category)));
+          setCategories(uniqueCategories);
         } else {
-          // If no data or data is not an array, use fallback
-          throw new Error('Invalid data format received');
+          setSkills([]);
+          setCategories([]);
         }
       } catch (error) {
-        console.error('Error fetching skills:', error);
-        // Fallback data
-        const fallbackSkills = [
-          {
-            id: 1,
-            name: 'React',
-            category: 'Frontend',
-            proficiency: 90,
-            logo: '/logos/react.png'
-          },
-          {
-            id: 2,
-            name: 'Node.js',
-            category: 'Backend',
-            proficiency: 85,
-            logo: '/logos/nodejs.png'
-          },
-          {
-            id: 3,
-            name: 'TypeScript',
-            category: 'Languages',
-            proficiency: 80,
-            logo: '/logos/typescript.png'
-          },
-          {
-            id: 4,
-            name: 'MongoDB',
-            category: 'Database',
-            proficiency: 75,
-            logo: '/logos/mongodb.png'
-          },
-          {
-            id: 5,
-            name: 'AWS',
-            category: 'DevOps',
-            proficiency: 70,
-            logo: '/logos/aws.png'
-          }
-        ];
-        setSkills(fallbackSkills);
+        console.error('Error in skills fetch:', error);
+        setError(true);
       } finally {
         setLoading(false);
       }
     };
     
     fetchSkills();
+    
+    // Set up real-time subscription
+    const skillsSubscription = supabase
+      .channel('skills-changes')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'skills' }, 
+        () => {
+          console.log('Skills data changed, refreshing...');
+          fetchSkills();
+        }
+      )
+      .subscribe();
+    
+    return () => {
+      supabase.removeChannel(skillsSubscription);
+    };
   }, []);
-  
-  // Group skills by category
-  const groupedSkills: Record<string, Skill[]> = {};
-  skills.forEach(skill => {
-    if (!groupedSkills[skill.category]) {
-      groupedSkills[skill.category] = [];
-    }
-    groupedSkills[skill.category].push(skill);
-  });
   
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-40">
-        <div className={`animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 ${
-          isDarkMode ? 'border-[#19A7CE]' : 'border-[#0B409C]'
-        }`}></div>
-      </div>
+      <section id="skills" className="py-16 md:py-24">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className={`text-3xl font-bold text-center mb-12 ${
+            isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
+          }`}>
+            Skills & Technologies
+          </h2>
+          <div className="flex justify-center">
+            <div className={`animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 ${
+              isDarkMode ? 'border-[#19A7CE]' : 'border-[#0B409C]'
+            }`}></div>
+          </div>
+        </div>
+      </section>
     );
   }
   
-  if (Object.keys(groupedSkills).length === 0) {
-    return <EmptySection title="Skills" message="No skills to display." />;
+  if (error || skills.length === 0) {
+    return <EmptySection title="Skills & Technologies" message="No skills to display yet." />;
   }
   
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-      >
+    <section id="skills" className="py-16 md:py-24">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className={`text-3xl font-bold text-center mb-12 ${
           isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
-        }`}>Skills</h2>
+        }`}>
+          Skills & Technologies
+        </h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {Object.entries(groupedSkills).map(([category, categorySkills]) => (
-            <motion.div
-              key={category}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              className={`p-6 rounded-lg shadow-md ${
-                isDarkMode 
-                  ? 'bg-[#0A0A0A] border border-[#146C94]/30' 
-                  : 'bg-[#F2F7FF] border border-[#0B409C]/10'
-              }`}
-            >
-              <h3 className={`text-xl font-semibold mb-6 ${
-                isDarkMode ? 'text-[#19A7CE]' : 'text-[#0B409C]'
-              }`}>{category}</h3>
-              
-              <div className="space-y-6">
-                {categorySkills.map((skill) => (
-                  <div key={skill.id} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        {skill.logo && (
-                          <div className="w-6 h-6 mr-3">
-                            <img
-                              src={skill.logo}
-                              alt={`${skill.name} logo`}
-                              className="w-full h-full object-contain"
-                            />
-                          </div>
-                        )}
-                        <span className={`font-medium ${
-                          isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
-                        }`}>{skill.name}</span>
-                      </div>
-                      <span className={`text-sm ${
-                        isDarkMode ? 'text-[#F6F1F1]/70' : 'text-[#10316B]/70'
-                      }`}>{skill.proficiency}%</span>
-                    </div>
-                    
-                    <div className={`w-full h-2 rounded-full ${
-                      isDarkMode ? 'bg-[#0A0A0A]' : 'bg-[#E5E7EB]'
+        {categories.map((category, categoryIndex) => (
+          <div key={category} className="mb-12">
+            <h3 className={`text-xl font-semibold mb-6 ${
+              isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
+            }`}>
+              {category}
+            </h3>
+            
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {skills
+                .filter(skill => skill.category === category)
+                .map((skill, index) => (
+                  <motion.div
+                    key={skill.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: (categoryIndex * 0.1) + (index * 0.05) }}
+                    className={`p-4 rounded-lg flex flex-col items-center text-center ${
+                      isDarkMode 
+                        ? 'bg-[#0A0A0A] border border-[#146C94]/20' 
+                        : 'bg-white shadow-sm'
+                    }`}
+                  >
+                    {skill.icon && (
+                      <div className="text-2xl mb-2">{skill.icon}</div>
+                    )}
+                    <h4 className={`font-medium ${
+                      isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
                     }`}>
-                      <motion.div
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${skill.proficiency}%` }}
-                        transition={{ duration: 1, ease: "easeOut" }}
-                        viewport={{ once: true }}
-                        className={`h-full rounded-full ${
+                      {skill.name}
+                    </h4>
+                    <div className="w-full mt-2 bg-gray-200 rounded-full h-1.5 dark:bg-gray-700">
+                      <div 
+                        className={`h-1.5 rounded-full ${
                           isDarkMode ? 'bg-[#19A7CE]' : 'bg-[#0B409C]'
-                        }`}
-                      />
+                        }`} 
+                        style={{ width: `${skill.proficiency * 10}%` }}
+                      ></div>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
-    </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
