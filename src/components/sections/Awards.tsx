@@ -1,9 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { handleAuthError, supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { useTheme } from '@/lib/ThemeContext';
 import EmptySection from '@/components/ui/EmptySection';
 
@@ -19,62 +20,32 @@ interface Award {
 export default function AwardsSection() {
   const [awards, setAwards] = useState<Award[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<boolean>(false);
   const { theme } = useTheme();
   const isDarkMode = theme === 'dark';
   
   useEffect(() => {
-    console.log('AwardsSection mounted');
-    
     const fetchAwards = async () => {
       try {
-        console.log('Fetching awards data...');
         const { data, error } = await supabase
           .from('awards')
           .select('*')
           .order('date', { ascending: false });
         
-        console.log('Awards data response:', { data, error });
-        
-        // Handle empty error objects
-        if (error && (typeof error === 'object' && Object.keys(error).length > 0)) {
-          // Try to handle auth error
-          if (!await handleAuthError(error)) {
-            throw new Error('Authentication error, please refresh the page');
-          }
+        if (error) {
+          console.error('Error fetching awards:', error);
+          setError(true);
           throw error;
         }
         
-        // If we have data, use it
-        if (data && Array.isArray(data)) {
-          console.log('Setting awards data:', data.length, 'items');
+        if (data) {
           setAwards(data);
         } else {
-          // If no data or data is not an array, use fallback
-          throw new Error('Invalid data format received');
+          setAwards([]);
         }
       } catch (error) {
-        console.error('Error fetching awards:', error);
-        // Fallback data
-        const fallbackAwards = [
-          {
-            id: 1,
-            title: 'Best Web Application',
-            issuer: 'Tech Innovation Awards',
-            date: '2022-11-15',
-            description: 'Awarded for developing an innovative web application that addresses accessibility challenges.',
-            issuer_logo: '/logos/tech-innovation.png'
-          },
-          {
-            id: 2,
-            title: 'Hackathon Winner',
-            issuer: 'Global Code Challenge',
-            date: '2021-07-20',
-            description: 'First place in a 48-hour hackathon focused on creating solutions for environmental sustainability.',
-            issuer_logo: '/logos/global-code.png'
-          }
-        ];
-        console.log('Using fallback awards data');
-        setAwards(fallbackAwards);
+        console.error('Error in awards fetch:', error);
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -82,30 +53,113 @@ export default function AwardsSection() {
     
     fetchAwards();
     
+    // Set up real-time subscription for awards
+    const awardsSubscription = supabase
+      .channel('awards-changes')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'awards' }, 
+        () => {
+          console.log('Awards data changed, refreshing...');
+          fetchAwards();
+        }
+      )
+      .subscribe();
+    
     return () => {
-      console.log('AwardsSection unmounted');
+      supabase.removeChannel(awardsSubscription);
     };
   }, []);
   
-  // Rest of the component remains the same
-  
-  // Add this debug output
-  console.log('AwardsSection render state:', { loading, awardsCount: awards.length, isDarkMode });
-  
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-40">
-        <div className={`animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 ${
-          isDarkMode ? 'border-[#19A7CE]' : 'border-[#0B409C]'
-        }`}></div>
-      </div>
+      <section id="awards" className="py-16 md:py-24">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className={`text-3xl font-bold text-center mb-12 ${
+            isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
+          }`}>
+            Awards & Recognition
+          </h2>
+          <div className="flex justify-center">
+            <div className={`animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 ${
+              isDarkMode ? 'border-[#19A7CE]' : 'border-[#0B409C]'
+            }`}></div>
+          </div>
+        </div>
+      </section>
     );
   }
   
-  // Replace the existing empty state with:
-  if (awards.length === 0) {
-    return <EmptySection title="Awards & Recognition" message="No awards to display." />;
+  if (error || awards.length === 0) {
+    return <EmptySection title="Awards & Recognition" message="No awards to display yet." />;
   }
   
-  // Rest of the component remains the same
+  return (
+    <section id="awards" className="py-16 md:py-24">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 className={`text-3xl font-bold text-center mb-12 ${
+          isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
+        }`}>
+          Awards & Recognition
+        </h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {awards.map((award, index) => (
+            <motion.div
+              key={award.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className={`p-6 rounded-lg ${
+                isDarkMode 
+                  ? 'bg-[#0A0A0A] border border-[#146C94]/20' 
+                  : 'bg-white shadow-md'
+              }`}
+            >
+              <div className="flex items-start">
+                {award.issuer_logo && (
+                  <div className="flex-shrink-0 mr-4">
+                    <img 
+                      src={award.issuer_logo} 
+                      alt={`${award.issuer} logo`} 
+                      className="h-12 w-12 object-contain"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                  </div>
+                )}
+                <div>
+                  <h3 className={`text-xl font-semibold ${
+                    isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
+                  }`}>
+                    {award.title}
+                  </h3>
+                  <p className={`${
+                    isDarkMode ? 'text-[#F6F1F1]/80' : 'text-[#10316B]/80'
+                  }`}>
+                    {award.issuer}
+                  </p>
+                  <p className={`text-sm ${
+                    isDarkMode ? 'text-[#F6F1F1]/60' : 'text-[#10316B]/60'
+                  }`}>
+                    {new Date(award.date).toLocaleDateString('en-US', { 
+                      year: 'numeric', 
+                      month: 'long' 
+                    })}
+                  </p>
+                  {award.description && (
+                    <p className={`mt-2 text-sm ${
+                      isDarkMode ? 'text-[#F6F1F1]/70' : 'text-[#10316B]/70'
+                    }`}>
+                      {award.description}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
 }

@@ -102,11 +102,12 @@ export default function AdminNewPage() {
           { name: 'description', label: 'Description', type: 'textarea' },
           { name: 'issuer_logo', label: 'Issuer Logo', type: 'image' },
         ];
+      
       case 'languages':
         return [
           { name: 'name', label: 'Language Name', type: 'text', required: true },
-          { name: 'proficiency', label: 'Proficiency Level', type: 'text', required: true },
-          { name: 'order', label: 'Display Order', type: 'number', required: true },
+          { name: 'proficiency', label: 'Proficiency Level', type: 'select', options: ['Beginner', 'Intermediate', 'Advanced', 'Fluent', 'Native'], required: true },
+          { name: 'flag_icon', label: 'Flag Icon URL', type: 'text' },
         ];
       case 'organizations':
         return [

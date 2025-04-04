@@ -1,155 +1,356 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { useTheme } from '@/lib/ThemeContext';
 import Image from 'next/image';
-import { supabase } from '@/lib/supabase';
-import EmptySection from '@/components/ui/EmptySection';
-
-interface AboutData {
-  id: number;
-  title: string;
-  description: string;
-  image_url: string;
-  resume_url: string;
-}
+import Link from 'next/link';
+import { FaLinkedin, FaGithub, FaInstagram, FaFacebook, FaDownload } from 'react-icons/fa';
+import { HiCode, HiDatabase, HiChip } from 'react-icons/hi';
 
 export default function AboutSection() {
-  const [aboutData, setAboutData] = useState<AboutData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { theme } = useTheme();
+  const isDarkMode = theme === 'dark';
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"]
+  });
   
-  useEffect(() => {
-    const fetchAboutData = async () => {
-      try {
-        // Check if the table exists first
-        const { error: tableError } = await supabase
-          .from('about')
-          .select('count')
-          .limit(1)
-          .single();
-        
-        // If there's an error with the table check, use fallback data
-        if (tableError) {
-          console.log('About table may not exist yet, using fallback data');
-          throw new Error('Table not found or empty');
-        }
-        
-        // If table exists, try to get the data
-        const { data, error } = await supabase
-          .from('about')
-          .select('*')
-          .single();
-        
-        if (error) throw error;
-        
-        if (data) {
-          setAboutData(data);
-        } else {
-          // No data found, use fallback
-          throw new Error('No about data found');
-        }
-      } catch (error) {
-        console.error('Using fallback about data:', error);
-        // Fallback data if fetch fails
-        setAboutData({
-          id: 1,
-          title: 'Software Developer & AI Enthusiast',
-          description: 'I am a passionate software developer with expertise in web development, artificial intelligence, and machine learning. With a strong foundation in computer science and a keen interest in emerging technologies, I strive to create innovative solutions that make a positive impact.\n\nMy journey in technology began with a curiosity about how things work, which evolved into a deep passion for building software that solves real-world problems. I enjoy the challenge of learning new technologies and applying them to create efficient, scalable, and user-friendly applications.',
-          image_url: '/placeholder-profile.svg', // Use SVG placeholder
-          resume_url: '/resume.pdf'
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchAboutData();
-  }, []);
-  
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-40">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
-  
-  // Replace this:
-  if (!aboutData) return null;
-  
-  // With this:
-  if (!aboutData) {
-    return <EmptySection title="About Me" message="About section information is not available." />;
-  }
+  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+  const y = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [50, 0, 0, -50]);
   
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-        className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center"
-      >
-        {/* Content remains the same */}
-        <div className="order-2 md:order-1">
-          <h2 className="text-3xl font-bold mb-4">{aboutData.title}</h2>
-          <div className="text-gray-600 space-y-4">
-            {aboutData.description.split('\n\n').map((paragraph, index) => (
-              <p key={index}>{paragraph}</p>
-            ))}
-          </div>
-          
-          {aboutData.resume_url && (
-            <motion.div 
-              className="mt-6"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              viewport={{ once: true }}
-            >
-              <a 
-                href={aboutData.resume_url} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Download Resume
-                <svg className="ml-2 -mr-1 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-              </a>
-            </motion.div>
-          )}
+    <section 
+      ref={sectionRef}
+      id="about" 
+      className="py-16 md:py-24 relative overflow-hidden"
+    >
+      {/* Background code pattern */}
+      <div className="absolute inset-0 opacity-5 pointer-events-none overflow-hidden">
+        <div className="absolute top-0 left-0 text-xs md:text-sm font-mono">
+          {Array(20).fill(0).map((_, i) => (
+            <div key={i} className="opacity-20">
+              {'{'}
+              {Array(Math.floor(Math.random() * 10) + 1).fill(0).map((_, j) => (
+                <span key={j} className="ml-4">const {String.fromCharCode(97 + Math.floor(Math.random() * 26))} = {Math.random().toString(36).substring(2, 8)};</span>
+              ))}
+              {'}'}
+            </div>
+          ))}
         </div>
-        
+      </div>
+      
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div 
-          className="order-1 md:order-2 flex justify-center"
-          initial={{ opacity: 0, scale: 0.8 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
+           style={{ opacity, y }}
+          className="flex flex-col md:flex-row items-center gap-12 relative"
         >
-          {aboutData.image_url && (
-            <div className="relative h-64 w-64 md:h-80 md:w-80 rounded-full overflow-hidden border-4 border-white shadow-lg">
+          {/* Floating tech icons - moved outside the profile image container */}
+          <motion.div 
+            className="absolute p-3 rounded-full bg-blue-500 text-white shadow-lg z-10"
+            style={{ top: '10%', left: '10%' }}
+            animate={{ 
+              x: ['0%', '80%', '90%', '80%', '0%', '-10%', '0%'],
+              y: ['0%', '-10%', '0%', '60%', '80%', '60%', '0%'],
+              boxShadow: [
+                '0px 0px 8px rgba(59, 130, 246, 0.5)',
+                '0px 0px 16px rgba(59, 130, 246, 0.8)',
+                '0px 0px 8px rgba(59, 130, 246, 0.5)'
+              ]
+            }}
+            transition={{ 
+              duration: 25, 
+              repeat: Infinity, 
+              repeatType: "loop",
+              ease: "linear" 
+            }}
+          >
+            <HiCode size={24} />
+          </motion.div>
+          
+          <motion.div 
+            className="absolute p-3 rounded-full bg-purple-500 text-white shadow-lg z-10"
+            style={{ top: '70%', left: '80%' }}
+            animate={{ 
+              x: ['0%', '-30%', '-80%', '-30%', '0%', '10%', '0%'],
+              y: ['0%', '-40%', '-60%', '-40%', '0%', '20%', '0%'],
+              boxShadow: [
+                '0px 0px 8px rgba(168, 85, 247, 0.5)',
+                '0px 0px 16px rgba(168, 85, 247, 0.8)',
+                '0px 0px 8px rgba(168, 85, 247, 0.5)'
+              ]
+            }}
+            transition={{ 
+              duration: 28, 
+              repeat: Infinity, 
+              repeatType: "loop", 
+              ease: "linear"
+            }}
+          >
+            <HiDatabase size={24} />
+          </motion.div>
+          
+          <motion.div 
+            className="absolute p-3 rounded-full bg-green-500 text-white shadow-lg z-10"
+            style={{ top: '40%', left: '50%' }}
+            animate={{ 
+              x: ['0%', '30%', '40%', '30%', '0%', '-30%', '-40%', '-30%', '0%'],
+              y: ['-20%', '-40%', '0%', '40%', '60%', '40%', '0%', '-40%', '-20%'],
+              boxShadow: [
+                '0px 0px 8px rgba(34, 197, 94, 0.5)',
+                '0px 0px 16px rgba(34, 197, 94, 0.8)',
+                '0px 0px 8px rgba(34, 197, 94, 0.5)'
+              ]
+            }}
+            transition={{ 
+              duration: 30, 
+              repeat: Infinity, 
+              repeatType: "loop", 
+              ease: "linear"
+            }}
+          >
+            <HiChip size={24} />
+          </motion.div>
+          
+          {/* Profile Image */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="w-full md:w-2/5 flex justify-center"
+          >
+            <div className={`relative rounded-xl overflow-hidden w-64 h-80 md:w-80 md:h-96 ${
+              isDarkMode ? 'shadow-[0_0_30px_rgba(25,167,206,0.3)]' : 'shadow-[0_0_30px_rgba(11,64,156,0.2)]'
+            }`}>
               <Image
-                src={aboutData.image_url}
-                alt="Profile"
+                src="/profile.jpg" 
+                alt="M. Ikhsan Pasaribu"
                 fill
-                sizes="(max-width: 768px) 256px, 320px"
                 className="object-cover"
                 priority
-                onError={(e) => {
-                  // If image fails to load, replace with a fallback
-                  const target = e.target as HTMLImageElement;
-                  target.onerror = null; // Prevent infinite loop
-                  target.src = '/placeholder-profile.jpg'; // Use a placeholder image
-                }}
               />
             </div>
-          )}
+          </motion.div>
+          
+          {/* About Content */}
+          <motion.div 
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="w-full md:w-3/5"
+          >
+            <motion.h2 
+              className={`text-4xl md:text-5xl font-bold mb-4 ${
+                isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
+              }`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              About Me
+            </motion.h2>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="text-xl text-green-400 font-light mb-6"
+            >
+              Hello!
+            </motion.div>
+            
+            <div className="space-y-4 mb-8">
+              <motion.div 
+                className="flex items-center gap-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                <span className="font-semibold min-w-24">Name:</span>
+                <span>M. Ikhsan Pasaribu</span>
+              </motion.div>
+              
+              <motion.div 
+                className="flex items-center gap-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                <span className="font-semibold min-w-24">Email:</span>
+                <span>mikhsanpasaribu2@gmail.com</span>
+              </motion.div>
+              
+              <motion.div 
+                className="flex items-center gap-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
+                <span className="font-semibold min-w-24">Location:</span>
+                <span>Padang, Sumatera Barat, Indonesia</span>
+              </motion.div>
+              
+              <motion.div 
+                className="flex items-center gap-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+              >
+                <span className="font-semibold min-w-24">Status:</span>
+                <span>College Student at Universitas Negeri Padang</span>
+              </motion.div>
+            </div>
+            
+            {/* Download CV Button */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+              className="mb-8"
+            >
+              <a 
+                href="/resume.pdf" 
+                download
+                className={`inline-flex items-center gap-2 px-6 py-3 rounded-full ${
+                  isDarkMode 
+                    ? 'bg-[#19A7CE] hover:bg-[#146C94] text-white' 
+                    : 'bg-[#0B409C] hover:bg-[#10316B] text-white'
+                } transition-colors duration-300`}
+              >
+                <FaDownload />
+                Download CV
+              </a>
+            </motion.div>
+            
+            {/* Social Media Links */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.7 }}
+              className="flex gap-4"
+            >
+              <motion.a 
+                href="https://linkedin.com/in/mikhsanpasaribu" 
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className={`p-3 rounded-full ${
+                  isDarkMode 
+                    ? 'bg-[#0A0A0A] text-[#F6F1F1] hover:bg-[#146C94]' 
+                    : 'bg-[#F2F7FF] text-[#10316B] hover:bg-[#0B409C] hover:text-white'
+                } transition-colors duration-300`}
+                aria-label="LinkedIn"
+              >
+                <FaLinkedin size={24} />
+              </motion.a>
+              
+              <motion.a 
+                href="https://github.com/mikhsanpasaribu" 
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className={`p-3 rounded-full ${
+                  isDarkMode 
+                    ? 'bg-[#0A0A0A] text-[#F6F1F1] hover:bg-[#146C94]' 
+                    : 'bg-[#F2F7FF] text-[#10316B] hover:bg-[#0B409C] hover:text-white'
+                } transition-colors duration-300`}
+                aria-label="GitHub"
+              >
+                <FaGithub size={24} />
+              </motion.a>
+              
+              <motion.a 
+                href="https://instagram.com/mikhsanpasaribu" 
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className={`p-3 rounded-full ${
+                  isDarkMode 
+                    ? 'bg-[#0A0A0A] text-[#F6F1F1] hover:bg-[#146C94]' 
+                    : 'bg-[#F2F7FF] text-[#10316B] hover:bg-[#0B409C] hover:text-white'
+                } transition-colors duration-300`}
+                aria-label="Instagram"
+              >
+                <FaInstagram size={24} />
+              </motion.a>
+              
+              <motion.a 
+                href="https://facebook.com/mikhsanpasaribu" 
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className={`p-3 rounded-full ${
+                  isDarkMode 
+                    ? 'bg-[#0A0A0A] text-[#F6F1F1] hover:bg-[#146C94]' 
+                    : 'bg-[#F2F7FF] text-[#10316B] hover:bg-[#0B409C] hover:text-white'
+                } transition-colors duration-300`}
+                aria-label="Facebook"
+              >
+                <FaFacebook size={24} />
+              </motion.a>
+            </motion.div>
+          </motion.div>
         </motion.div>
-      </motion.div>
-    </div>
+        
+        {/* Developer Role Cards */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.8 }}
+          className="mt-16 flex flex-wrap justify-center gap-4"
+        >
+          <motion.div 
+            whileHover={{ scale: 1.05, rotate: 2 }}
+            className={`px-6 py-4 rounded-lg ${
+              isDarkMode 
+                ? 'bg-[#0A0A0A] border border-[#146C94]' 
+                : 'bg-white shadow-md'
+            }`}
+          >
+            <div className="text-blue-500 mb-2">
+              <HiCode size={28} />
+            </div>
+            <h3 className="text-lg font-semibold mb-1">Software Developer</h3>
+            <p className="text-sm opacity-75">Building robust applications with clean, efficient code</p>
+          </motion.div>
+          
+          <motion.div 
+            whileHover={{ scale: 1.05, rotate: -2 }}
+            className={`px-6 py-4 rounded-lg ${
+              isDarkMode 
+                ? 'bg-[#0A0A0A] border border-[#146C94]' 
+                : 'bg-white shadow-md'
+            }`}
+          >
+            <div className="text-purple-500 mb-2">
+              <HiDatabase size={28} />
+            </div>
+            <h3 className="text-lg font-semibold mb-1">Full-Stack Developer</h3>
+            <p className="text-sm opacity-75">Creating seamless experiences from frontend to backend</p>
+          </motion.div>
+          
+          <motion.div 
+            whileHover={{ scale: 1.05, rotate: 2 }}
+            className={`px-6 py-4 rounded-lg ${
+              isDarkMode 
+                ? 'bg-[#0A0A0A] border border-[#146C94]' 
+                : 'bg-white shadow-md'
+            }`}
+          >
+            <div className="text-green-500 mb-2">
+              <HiChip size={28} />
+            </div>
+            <h3 className="text-lg font-semibold mb-1">AI Engineer & Enthusiast</h3>
+            <p className="text-sm opacity-75">Exploring the frontiers of artificial intelligence</p>
+          </motion.div>
+        </motion.div>
+      </div>
+    </section>
   );
 }
