@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -7,14 +6,14 @@ import { supabase } from '@/lib/supabase';
 import { useTheme } from '@/lib/ThemeContext';
 import Image from 'next/image';
 import { FaGithub, FaExternalLinkAlt } from 'react-icons/fa';
-import EmptySection from '@/components/ui/EmptySection';
 
+// Updated interface to match Supabase schema
 interface Project {
   id: number;
   title: string;
   description: string;
   image_url: string | null;
-  technologies: string;
+  technologies: string | null; // Make technologies nullable
   github_url: string | null;
   live_url: string | null;
   order: number;
@@ -121,7 +120,7 @@ export default function ProjectsSection() {
                   : 'bg-white shadow-lg'
               }`}
             >
-              {/* Project Image */}
+              {/* Project Image - Added error handling for images */}
               <div className="relative h-48 w-full overflow-hidden">
                 {project.image_url ? (
                   <Image
@@ -129,6 +128,12 @@ export default function ProjectsSection() {
                     alt={project.title}
                     fill
                     className="object-cover transition-transform duration-500 hover:scale-110"
+                    onError={(e) => {
+                      // Replace with fallback on error
+                      const target = e.target as HTMLImageElement;
+                      target.onerror = null; // Prevent infinite loop
+                      console.error(`Failed to load image: ${project.image_url}`);
+                    }}
                   />
                 ) : (
                   <div className={`h-full w-full flex items-center justify-center ${
@@ -144,29 +149,39 @@ export default function ProjectsSection() {
                 <h3 className={`text-xl font-bold mb-2 ${
                   isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
                 }`}>
-                  {project.title}
+                  {project.title || 'Untitled Project'}
                 </h3>
                 
                 <p className={`mb-4 text-sm ${
                   isDarkMode ? 'text-[#F6F1F1]/80' : 'text-gray-600'
                 }`}>
-                  {project.description}
+                  {project.description || 'No description available'}
                 </p>
                 
-                {/* Technologies */}
+                {/* Technologies - Added null check and error handling */}
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {project.technologies && project.technologies.split(',').map((tech, i) => (
-                    <span 
-                      key={i}
-                      className={`text-xs px-2 py-1 rounded-full ${
+                  {project.technologies && typeof project.technologies === 'string' ? 
+                    project.technologies.split(',').map((tech, i) => (
+                      <span 
+                        key={i}
+                        className={`text-xs px-2 py-1 rounded-full ${
+                          isDarkMode 
+                            ? 'bg-[#146C94]/20 text-[#19A7CE]' 
+                            : 'bg-[#0B409C]/10 text-[#0B409C]'
+                        }`}
+                      >
+                        {tech.trim()}
+                      </span>
+                    )) : (
+                      <span className={`text-xs px-2 py-1 rounded-full ${
                         isDarkMode 
                           ? 'bg-[#146C94]/20 text-[#19A7CE]' 
                           : 'bg-[#0B409C]/10 text-[#0B409C]'
-                      }`}
-                    >
-                      {tech.trim()}
-                    </span>
-                  ))}
+                      }`}>
+                        No technologies specified
+                      </span>
+                    )
+                  }
                 </div>
                 
                 {/* Links */}
