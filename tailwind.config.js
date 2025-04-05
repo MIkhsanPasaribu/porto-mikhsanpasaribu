@@ -9,6 +9,11 @@ module.exports = {
   darkMode: 'class', // Enable class-based dark mode
   theme: {
     extend: {
+      fontFamily: {
+        fira: ['var(--font-fira-code)', 'monospace'],
+        poppins: ['var(--font-poppins)', 'sans-serif'],
+        'jetbrains-mono': ['var(--font-jetbrains-mono)', 'monospace'],
+      },
       colors: {
         // Dark mode palette
         dark: {

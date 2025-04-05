@@ -12,17 +12,40 @@ export default function HomeSection() {
   const { theme } = useTheme();
   const isDarkMode = theme === 'dark';
   
-  const titles = ["Full Stack Developer", "Software Engineer", "AI Engineer & Enthusiast"];
-  const [currentTitleIndex, setCurrentTitleIndex] = useState(0);
+  // Tech-focused titles with code syntax
+  const titles = [
+    { role: "Full Stack Developer", syntax: "<code>frontend + backend</code>" },
+    { role: "Software Engineer", syntax: "function buildSolutions() { }" },
+    { role: "AI Engineer & Enthusiast", syntax: "model.train(data)" }
+  ];
   
-  // Effect to rotate through titles
+  const [currentTitleIndex, setCurrentTitleIndex] = useState(0);
+  const [displayedText, setDisplayedText] = useState("");
+  const fullName = "M. Ikhsan Pasaribu";
+  const [isTypingComplete, setIsTypingComplete] = useState(false);
+  
+  // Typewriter effect for name
   useEffect(() => {
+    if (displayedText.length < fullName.length) {
+      const timeout = setTimeout(() => {
+        setDisplayedText(fullName.slice(0, displayedText.length + 1));
+      }, 100);
+      return () => clearTimeout(timeout);
+    } else {
+      setIsTypingComplete(true);
+    }
+  }, [displayedText, fullName]);
+  
+  // Effect to rotate through titles after name typing is complete
+  useEffect(() => {
+    if (!isTypingComplete) return;
+    
     const interval = setInterval(() => {
       setCurrentTitleIndex((prevIndex) => (prevIndex + 1) % titles.length);
-    }, 3000); // Change title every 3 seconds
+    }, 4000); // Longer duration for reading code syntax
     
     return () => clearInterval(interval);
-  }, [titles.length]);
+  }, [isTypingComplete, titles.length]);
   
   // Particles initialization
   const particlesInit = useCallback(async (engine: Engine) => {
@@ -97,34 +120,53 @@ export default function HomeSection() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 z-10">
         <div className="text-center">
           <motion.h1 
-            className={`text-4xl sm:text-5xl md:text-6xl font-bold mb-6 ${
+            className={`font-poppins text-4xl sm:text-5xl md:text-6xl font-bold mb-6 ${
               isDarkMode 
                 ? 'text-[#F6F1F1] drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]' 
                 : 'text-[#10316B] drop-shadow-[0_2px_8px_rgba(255,255,255,0.7)]'
             }`}
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 1 }}
           >
-            M. Ikhsan Pasaribu
+            {displayedText}
+            <motion.span
+              animate={{ opacity: [0, 1, 0] }}
+              transition={{ repeat: Infinity, duration: 0.8 }}
+              className="inline-block ml-1 w-1 h-10 sm:h-12 md:h-14 align-middle"
+              style={{ 
+                backgroundColor: isDarkMode ? '#F6F1F1' : '#10316B',
+                display: isTypingComplete ? 'none' : 'inline-block'
+              }}
+            />
           </motion.h1>
           
-          <div className="h-12 sm:h-14 md:h-16 mb-8 relative">
+          <div className="h-24 sm:h-28 md:h-32 mb-8 relative">
             <AnimatePresence mode="wait">
-              <motion.p 
-                key={currentTitleIndex}
-                className={`text-xl sm:text-2xl md:text-3xl absolute w-full left-0 right-0 ${
-                  isDarkMode 
-                    ? 'text-[#19A7CE] drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]' 
-                    : 'text-[#0B409C] drop-shadow-[0_2px_8px_rgba(255,255,255,0.7)]'
-                }`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.5 }}
-              >
-                {titles[currentTitleIndex]}
-              </motion.p>
+              {isTypingComplete && (
+                <motion.div 
+                  key={currentTitleIndex}
+                  className="absolute w-full left-0 right-0"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <p className={`font-poppins text-xl sm:text-2xl md:text-3xl font-medium ${
+                    isDarkMode 
+                      ? 'text-[#19A7CE] drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]' 
+                      : 'text-[#0B409C] drop-shadow-[0_2px_8px_rgba(255,255,255,0.7)]'
+                  }`}>
+                    {titles[currentTitleIndex].role}
+                  </p>
+                  <p className={`font-jetbrains-mono text-sm sm:text-base md:text-lg mt-2 ${
+                    isDarkMode 
+                      ? 'text-[#19A7CE]/80' 
+                      : 'text-[#0B409C]/80'
+                  }`}>
+                    {titles[currentTitleIndex].syntax}
+                  </p>
+                </motion.div>
+              )}
             </AnimatePresence>
           </div>
           
@@ -166,7 +208,7 @@ export default function HomeSection() {
           transition={{ delay: 1, duration: 1 }}
         >
           <motion.p 
-            className={`text-sm mb-2 font-medium ${
+            className={`font-poppins text-sm mb-2 font-medium ${
               isDarkMode 
                 ? 'text-[#F6F1F1] drop-shadow-[0_2px_4px_rgba(0,0,0,0.7)]' 
                 : 'text-[#10316B] drop-shadow-[0_2px_4px_rgba(255,255,255,0.7)]'

@@ -1,13 +1,27 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Fira_Code, Poppins, JetBrains_Mono } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import Script from 'next/script';
 import { ThemeProvider } from '@/lib/ThemeContext';
 import ThemeSwitcher from '@/components/ui/ThemeSwitcher';
 import AdminBubble from '@/components/admin/AdminBubble';
 
-const inter = Inter({ subsets: ['latin'] });
+const firaCode = Fira_Code({ 
+  subsets: ['latin'],
+  variable: '--font-fira-code'
+});
+
+const poppins = Poppins({ 
+  weight: ['400', '500', '600', '700'],
+  subsets: ['latin'],
+  variable: '--font-poppins'
+});
+
+const jetbrainsMono = JetBrains_Mono({ 
+  subsets: ['latin'],
+  variable: '--font-jetbrains-mono'
+});
 
 export const metadata: Metadata = {
   title: 'M. Ikhsan Pasaribu - Portfolio',
@@ -25,7 +39,7 @@ export default function RootLayout({
         {/* DevIcons for skill icons */}
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css" />
       </head>
-      <body className={`${inter.className} bg-[#F2F7FF] dark:bg-[#000000] text-[#10316B] dark:text-[#F6F1F1] transition-colors duration-200`}>
+      <body className={`${firaCode.variable} ${poppins.variable} ${jetbrainsMono.variable} font-fira bg-[#F2F7FF] dark:bg-[#000000] text-[#10316B] dark:text-[#F6F1F1] transition-colors duration-200`}>
         <ThemeProvider>
           {children}
           <ThemeSwitcher />
@@ -49,11 +63,7 @@ export default function RootLayout({
                       observer.disconnect();
                     }
                   });
-                  
-                  observer.observe(document.documentElement, { 
-                    childList: true, 
-                    subtree: true 
-                  });
+                  observer.observe(document.documentElement, { childList: true, subtree: true });
                 }
               })();
             `}
