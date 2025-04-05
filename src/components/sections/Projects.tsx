@@ -44,7 +44,33 @@ export default function ProjectsSection() {
         console.log('Projects data received:', data);
         
         if (data && Array.isArray(data)) {
-          setProjects(data);
+          // Enhanced logging to debug technologies field
+          data.forEach(project => {
+            console.log(`Project ${project.id} technologies:`, project.technologies);
+            console.log(`Type of technologies:`, typeof project.technologies);
+          });
+          
+          // Process technologies to ensure consistent format
+          const processedData = data.map(project => {
+            let techData = project.technologies;
+            
+            // Handle technologies that might be stored as JSON string
+            if (typeof project.technologies === 'string' && project.technologies.startsWith('[')) {
+              try {
+                techData = JSON.parse(project.technologies);
+              } catch (e) {
+                console.error('Error parsing technologies JSON:', e);
+                techData = project.technologies;
+              }
+            }
+            
+            return {
+              ...project,
+              technologies: techData
+            };
+          });
+          
+          setProjects(processedData);
         } else {
           console.log('No projects data found or empty array');
           setProjects([]);
@@ -58,6 +84,22 @@ export default function ProjectsSection() {
     };
     
     fetchProjects();
+    
+    // Add real-time subscription for projects
+    const projectsSubscription = supabase
+      .channel('projects-changes')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'projects' }, 
+        () => {
+          console.log('Projects data changed, refreshing...');
+          fetchProjects();
+        }
+      )
+      .subscribe();
+    
+    return () => {
+      supabase.removeChannel(projectsSubscription);
+    };
   }, []);
   
   if (loading) {
@@ -158,29 +200,39 @@ export default function ProjectsSection() {
                   {project.description || 'No description available'}
                 </p>
                 
-                {/* Technologies - Added null check and error handling */}
+                {/* In the render section where technologies are displayed: */}
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {project.technologies && typeof project.technologies === 'string' ? 
-                    project.technologies.split(',').map((tech, i) => (
-                      <span 
-                        key={i}
-                        className={`text-xs px-2 py-1 rounded-full ${
-                          isDarkMode 
-                            ? 'bg-[#146C94]/20 text-[#19A7CE]' 
-                            : 'bg-[#0B409C]/10 text-[#0B409C]'
-                        }`}
-                      >
-                        {tech.trim()}
-                      </span>
-                    )) : (
-                      <span className={`text-xs px-2 py-1 rounded-full ${
-                        isDarkMode 
-                          ? 'bg-[#146C94]/20 text-[#19A7CE]' 
-                          : 'bg-[#0B409C]/10 text-[#0B409C]'
-                      }`}>
-                        No technologies specified
-                      </span>
-                    )
+                  {project.technologies ? 
+                    (Array.isArray(project.technologies) 
+                      ? project.technologies.map((tech, i) => (
+                          <span 
+                            key={i}
+                            className={`text-xs px-2 py-1 rounded-full ${
+                              isDarkMode 
+                                ? 'bg-[#146C94]/20 text-[#19A7CE]' 
+                                : 'bg-[#0B409C]/10 text-[#0B409C]'
+                            }`}
+                          >
+                            {tech}
+                          </span>
+                        ))
+                      : typeof project.technologies === 'string'
+                        ? project.technologies.split(',')
+                            .filter(tech => tech.trim() !== '')
+                            .map((tech, i) => (
+                              <span 
+                                key={i}
+                                className={`text-xs px-2 py-1 rounded-full ${
+                                  isDarkMode 
+                                    ? 'bg-[#146C94]/20 text-[#19A7CE]' 
+                                    : 'bg-[#0B409C]/10 text-[#0B409C]'
+                                }`}
+                              >
+                                {tech.trim()}
+                              </span>
+                            ))
+                        : null
+                    ) : null
                   }
                 </div>
                 

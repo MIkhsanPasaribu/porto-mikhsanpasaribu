@@ -24,26 +24,86 @@ export default function AdminDashboard() {
   const { theme } = useTheme();
   const isDarkMode = theme === 'dark';
   
+  // Define sections with descriptions for the dashboard
+  const sections = [
+    { 
+      name: 'Projects', 
+      table: 'projects', 
+      description: 'Manage your portfolio projects',
+      icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10',
+      href: '/admin/projects'
+    },
+    { 
+      name: 'Skills', 
+      table: 'skills', 
+      description: 'Update your technical skills',
+      icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01',
+      href: '/admin/skills'
+    },
+    { 
+      name: 'Experiences', 
+      table: 'experiences', 
+      description: 'Edit your work experience',
+      icon: 'M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
+      href: '/admin/experiences'
+    },
+    { 
+      name: 'Education', 
+      table: 'education', 
+      description: 'Manage your educational background',
+      icon: 'M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222',
+      href: '/admin/education'
+    },
+    { 
+      name: 'Certifications', 
+      table: 'certifications', 
+      description: 'Add or update your certifications',
+      icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
+      href: '/admin/certifications'
+    },
+    { 
+      name: 'Awards', 
+      table: 'awards', 
+      description: 'Showcase your achievements',
+      icon: 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z',
+      href: '/admin/awards'
+    },
+    { 
+      name: 'Languages', 
+      table: 'languages', 
+      description: 'Update your language proficiencies',
+      icon: 'M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129',
+      href: '/admin/languages'
+    },
+    { 
+      name: 'Organizations', 
+      table: 'organizations', 
+      description: 'Manage your organizational affiliations',
+      icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
+      href: '/admin/organizations'
+    },
+    { 
+      name: 'Volunteering', 
+      table: 'volunteering', 
+      description: 'Add volunteer experience',
+      icon: 'M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z',
+      href: '/admin/volunteering'
+    },
+    { 
+      name: 'Contact Messages', 
+      table: 'contacts', 
+      description: 'View messages from visitors',
+      icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
+      href: '/admin/contacts'
+    },
+  ];
+  
   useEffect(() => {
     if (!isAuthenticated) return;
     
     const fetchStats = async () => {
       try {
         setLoading(true);
-        
-        // Define sections to fetch stats for
-        const sections = [
-          { name: 'Projects', table: 'projects', icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10' },
-          { name: 'Skills', table: 'skills', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' },
-          { name: 'Experiences', table: 'experiences', icon: 'M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
-          { name: 'Education', table: 'education', icon: 'M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222' },
-          { name: 'Certifications', table: 'certifications', icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' },
-          { name: 'Awards', table: 'awards', icon: 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z' },
-          { name: 'Languages', table: 'languages', icon: 'M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129' },
-          { name: 'Organizations', table: 'organizations', icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4' },
-          { name: 'Volunteering', table: 'volunteering', icon: 'M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z' },
-          { name: 'Contact Messages', table: 'contacts', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
-        ];
         
         // Improved fetch method for more reliable counts
         const statsPromises = sections.map(async (section) => {
@@ -89,8 +149,6 @@ export default function AdminDashboard() {
     fetchStats();
     
     // Set up a more reliable real-time subscription system
-    const channels = [];
-    
     const tables = [
       'projects', 'skills', 'experiences', 'education', 
       'certifications', 'awards', 'languages', 
@@ -188,86 +246,47 @@ export default function AdminDashboard() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {stats.map((stat, index) => (
-            <motion.div
-              key={stat.name}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: index * 0.1 }}
-            >
-              <Link href={stat.route}>
-                <div 
-                  className={`rounded-lg p-6 h-full transition-all duration-300 transform hover:scale-105 hover:shadow-xl ${
-                    isDarkMode 
-                      ? 'bg-[#0A0A0A] border border-[#146C94]/20 hover:border-[#19A7CE]/50 shadow-[0_4px_12px_rgba(20,108,148,0.15)]' 
-                      : 'bg-white border border-[#0B409C]/10 hover:border-[#0B409C]/30 shadow-[0_4px_12px_rgba(11,64,156,0.08)]'
-                  }`}
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h2 className={`text-lg font-semibold ${isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'}`}>
-                        {stat.name}
-                      </h2>
-                      <p className={`text-3xl font-bold mt-2 ${
-                        isDarkMode 
-                          ? 'text-[#19A7CE]' 
-                          : 'text-[#0B409C]'
-                      }`}>
-                        {stat.count}
-                      </p>
-                    </div>
-                    <div className={`p-3 rounded-full ${
-                      isDarkMode 
-                        ? 'bg-[#146C94]/20 text-[#19A7CE]' 
-                        : 'bg-[#0B409C]/10 text-[#0B409C]'
-                    }`}>
-                      <svg 
-                        xmlns="http://www.w3.org/2000/svg" 
-                        className="h-6 w-6" 
-                        fill="none" 
-                        viewBox="0 0 24 24" 
-                        stroke="currentColor"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={stat.icon} />
-                      </svg>
-                    </div>
-                  </div>
-                  <div className={`mt-4 text-sm ${
-                    isDarkMode 
-                      ? 'text-[#F6F1F1]/60' 
-                      : 'text-[#10316B]/60'
-                  }`}>
-                    Click to manage {stat.name.toLowerCase()}
-                  </div>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
-          
-          {/* Add New Content Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: stats.length * 0.1 }}
-          >
-            <div 
-              className={`rounded-lg p-6 h-full border-2 border-dashed transition-all duration-300 flex flex-col items-center justify-center cursor-pointer hover:scale-105 ${
-                isDarkMode 
-                  ? 'border-[#146C94]/30 hover:border-[#19A7CE]/60 text-[#19A7CE]' 
-                  : 'border-[#0B409C]/20 hover:border-[#0B409C]/40 text-[#0B409C]'
+          {sections.map((section) => (
+            <Link
+              key={section.name}
+              href={section.href}
+              className={`block p-6 rounded-lg shadow-sm transition-all duration-200 transform hover:scale-105 ${
+                isDarkMode
+                  ? 'bg-[#0A0A0A] border border-[#146C94]/30 hover:border-[#19A7CE]/50'
+                  : 'bg-white border border-[#0B409C]/10 hover:border-[#0B409C]/30'
               }`}
-              onClick={() => router.push('/admin/new-content')}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
-              </svg>
-              <p className={`font-medium ${
-                isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
-              }`}>
-                Add New Content
-              </p>
-            </div>
-          </motion.div>
+              <div className="flex items-center">
+                <div className={`p-3 rounded-full ${
+                  isDarkMode
+                    ? 'bg-[#146C94]/20 text-[#19A7CE]'
+                    : 'bg-[#0B409C]/10 text-[#0B409C]'
+                }`}>
+                  <svg
+                    className="h-6 w-6"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={section.icon} />
+                  </svg>
+                </div>
+                <div className="ml-4">
+                  <h3 className={`text-lg font-medium ${
+                    isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
+                  }`}>
+                    {section.name}
+                  </h3>
+                  <p className={`mt-1 text-sm ${
+                    isDarkMode ? 'text-[#F6F1F1]/70' : 'text-[#10316B]/70'
+                  }`}>
+                    {section.description}
+                  </p>
+                </div>
+              </div>
+            </Link>
+          ))}
         </div>
       )}
       
