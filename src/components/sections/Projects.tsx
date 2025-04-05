@@ -63,6 +63,22 @@ export default function ProjectsSection() {
     };
     
     fetchProjects();
+    
+    // Add real-time subscription for projects
+    const projectsSubscription = supabase
+      .channel('projects-changes')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'projects' }, 
+        () => {
+          console.log('Projects data changed, refreshing...');
+          fetchProjects();
+        }
+      )
+      .subscribe();
+    
+    return () => {
+      supabase.removeChannel(projectsSubscription);
+    };
   }, []);
   
   if (loading) {
