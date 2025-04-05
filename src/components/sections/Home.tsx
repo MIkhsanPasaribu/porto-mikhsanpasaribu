@@ -1,15 +1,36 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '@/lib/ThemeContext';
 import Button from '@/components/ui/Button';
+import Particles from "react-tsparticles";
+import { loadSlim } from "tsparticles-slim";
+import type { Engine } from "tsparticles-engine";
 
 export default function HomeSection() {
   const { theme } = useTheme();
   const isDarkMode = theme === 'dark';
   
+  const titles = ["Full Stack Developer", "Software Engineer", "AI Engineer & Enthusiast"];
+  const [currentTitleIndex, setCurrentTitleIndex] = useState(0);
+  
+  // Effect to rotate through titles
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTitleIndex((prevIndex) => (prevIndex + 1) % titles.length);
+    }, 3000); // Change title every 3 seconds
+    
+    return () => clearInterval(interval);
+  }, [titles.length]);
+  
+  // Particles initialization
+  const particlesInit = useCallback(async (engine: Engine) => {
+    await loadSlim(engine);
+  }, []);
+  
   return (
-    <div className="relative h-full flex items-center justify-center">
+    <div className="relative h-full flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0 z-0">
         {/* Further reduced opacity gradient for better 3D visibility */}
         <div className={`absolute inset-0 ${
@@ -19,7 +40,59 @@ export default function HomeSection() {
         }`}></div>
       </div>
       
-      {/* Removed the semi-transparent overlay to make 3D elements more visible */}
+      {/* Tech-themed particles */}
+      <Particles
+        id="tsparticles"
+        init={particlesInit}
+        className="absolute inset-0 z-0"
+        options={{
+          background: {
+            color: {
+              value: "transparent",
+            },
+          },
+          fpsLimit: 120,
+          particles: {
+            color: {
+              value: isDarkMode ? "#19A7CE" : "#0B409C",
+            },
+            links: {
+              color: isDarkMode ? "#19A7CE" : "#0B409C",
+              distance: 150,
+              enable: true,
+              opacity: 0.3,
+              width: 1,
+            },
+            move: {
+              direction: "none",
+              enable: true,
+              outModes: {
+                default: "bounce",
+              },
+              random: false,
+              speed: 1,
+              straight: false,
+            },
+            number: {
+              density: {
+                enable: true,
+                area: 800,
+              },
+              value: 80,
+            },
+            opacity: {
+              value: 0.3,
+            },
+            shape: {
+              type: "circle",
+            },
+            size: {
+              value: { min: 1, max: 3 },
+            },
+          },
+          detectRetina: true,
+        }}
+      />
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 z-10">
         <div className="text-center">
@@ -36,18 +109,24 @@ export default function HomeSection() {
             M. Ikhsan Pasaribu
           </motion.h1>
           
-          <motion.p 
-            className={`text-xl sm:text-2xl md:text-3xl mb-8 ${
-              isDarkMode 
-                ? 'text-[#19A7CE] drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]' 
-                : 'text-[#0B409C] drop-shadow-[0_2px_8px_rgba(255,255,255,0.7)]'
-            }`}
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            Full Stack Developer
-          </motion.p>
+          <div className="h-12 sm:h-14 md:h-16 mb-8 relative">
+            <AnimatePresence mode="wait">
+              <motion.p 
+                key={currentTitleIndex}
+                className={`text-xl sm:text-2xl md:text-3xl absolute w-full left-0 right-0 ${
+                  isDarkMode 
+                    ? 'text-[#19A7CE] drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]' 
+                    : 'text-[#0B409C] drop-shadow-[0_2px_8px_rgba(255,255,255,0.7)]'
+                }`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+              >
+                {titles[currentTitleIndex]}
+              </motion.p>
+            </AnimatePresence>
+          </div>
           
           <motion.div
             className="flex flex-col sm:flex-row justify-center gap-4"
