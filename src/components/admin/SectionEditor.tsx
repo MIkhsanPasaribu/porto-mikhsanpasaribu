@@ -5,6 +5,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import TagInput from './TagInput';
 
 interface SectionEditorProps {
   tableName: string;
@@ -24,6 +25,7 @@ export default function SectionEditor({ tableName, initialData, fields, onSucces
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const router = useRouter();
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -37,6 +39,7 @@ export default function SectionEditor({ tableName, initialData, fields, onSucces
     }
   };
   
+  // Modified to actually use this function for tags input
   const handleTagsChange = (name: string, value: string) => {
     const tagsArray = value.split(',').map(tag => tag.trim()).filter(Boolean);
     setFormData((prev: Record<string, unknown>) => ({ ...prev, [name]: tagsArray }));
@@ -214,18 +217,12 @@ export default function SectionEditor({ tableName, initialData, fields, onSucces
               )}
               
               {field.type === 'tags' && (
-                <div>
-                  <input
-                    type="text"
-                    id={field.name}
-                    value={Array.isArray(formData[field.name]) ? formData[field.name].join(', ') : ''}
-                    onChange={(e) => handleTagsChange(field.name, e.target.value)}
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    placeholder="Enter comma-separated values"
-                    required={field.required}
-                  />
-                  <p className="text-xs text-gray-500 mt-1">Enter comma-separated values</p>
-                </div>
+                <TagInput
+                  value={formData[field.name] || ''}
+                  onChange={(value) => handleTagsChange(field.name, value)}
+                  placeholder={`Add ${field.label.toLowerCase()}...`}
+                  className="w-full bg-white border-gray-300"
+                />
               )}
               
               {field.type === 'image' && (

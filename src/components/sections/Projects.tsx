@@ -44,7 +44,12 @@ export default function ProjectsSection() {
         console.log('Projects data received:', data);
         
         if (data && Array.isArray(data)) {
-          setProjects(data);
+          // Process technologies to ensure consistent format
+          const processedData = data.map(project => ({
+            ...project,
+            technologies: project.technologies || null
+          }));
+          setProjects(processedData);
         } else {
           console.log('No projects data found or empty array');
           setProjects([]);
@@ -158,21 +163,26 @@ export default function ProjectsSection() {
                   {project.description || 'No description available'}
                 </p>
                 
-                {/* Technologies - Added null check and error handling */}
+                {/* Simplified technologies rendering */}
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {project.technologies && typeof project.technologies === 'string' ? 
-                    project.technologies.split(',').map((tech, i) => (
-                      <span 
-                        key={i}
-                        className={`text-xs px-2 py-1 rounded-full ${
-                          isDarkMode 
-                            ? 'bg-[#146C94]/20 text-[#19A7CE]' 
-                            : 'bg-[#0B409C]/10 text-[#0B409C]'
-                        }`}
-                      >
-                        {tech.trim()}
-                      </span>
-                    )) : (
+                  {project.technologies ? 
+                    (typeof project.technologies === 'string' 
+                      ? project.technologies.split(',')
+                          .filter(tech => tech.trim() !== '')
+                          .map((tech, i) => (
+                            <span 
+                              key={i}
+                              className={`text-xs px-2 py-1 rounded-full ${
+                                isDarkMode 
+                                  ? 'bg-[#146C94]/20 text-[#19A7CE]' 
+                                  : 'bg-[#0B409C]/10 text-[#0B409C]'
+                              }`}
+                            >
+                              {tech.trim()}
+                            </span>
+                          ))
+                      : null
+                    ) : (
                       <span className={`text-xs px-2 py-1 rounded-full ${
                         isDarkMode 
                           ? 'bg-[#146C94]/20 text-[#19A7CE]' 
