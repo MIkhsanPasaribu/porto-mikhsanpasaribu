@@ -64,46 +64,48 @@ export default function AdminLayout({
     { name: 'Contact Messages', href: '/admin/contacts', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
   ];
   
+  // Update the sidebar and main content colors
   return (
     <div className={`min-h-screen flex overflow-hidden ${isDarkMode ? 'bg-[#000000]' : 'bg-[#F2F7FF]'}`}>
-      {/* Desktop sidebar */}
-      <div className={`hidden md:flex md:flex-shrink-0 ${isDarkMode ? 'bg-[#0A0A0A]' : 'bg-white'}`}>
-        <div className="flex flex-col w-64">
+      {/* Sidebar for desktop */}
+      <div className={`hidden md:flex md:flex-shrink-0`}>
+        <div className={`flex flex-col w-64 ${
+          isDarkMode 
+            ? 'bg-[#0A0A0A] border-r border-[#146C94]/30' 
+            : 'bg-white border-r border-[#0B409C]/10'
+        }`}>
+          {/* Sidebar content */}
           <div className="flex flex-col h-0 flex-1">
-            <div className={`flex items-center h-16 flex-shrink-0 px-4 ${isDarkMode ? 'bg-[#0A0A0A] border-b border-[#146C94]/20' : 'bg-white border-b border-[#0B409C]/10'}`}>
-              <Link href="/admin/dashboard" className="flex items-center">
-                <span className={`text-xl font-bold ${isDarkMode ? 'text-[#19A7CE]' : 'text-[#0B409C]'}`}>
-                  Portfolio Admin
-                </span>
-              </Link>
+            <div className="flex items-center h-16 flex-shrink-0 px-4 border-b border-gray-200 dark:border-[#146C94]/30">
+              <h1 className={`text-xl font-bold ${isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'}`}>
+                Portfolio Admin
+              </h1>
             </div>
-            <div className="flex-1 flex flex-col overflow-y-auto">
-              <nav className="flex-1 px-2 py-4 space-y-1">
+            
+            {/* Navigation */}
+            <div className="flex-1 flex flex-col overflow-y-auto pt-5 pb-4">
+              <nav className="mt-5 flex-1 px-2 space-y-1">
                 {navItems.map((item) => {
                   const isActive = pathname === item.href;
                   return (
                     <Link
                       key={item.name}
                       href={item.href}
-                      className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
+                      className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
                         isActive
-                          ? isDarkMode
-                            ? 'bg-[#146C94]/20 text-[#19A7CE]'
+                          ? isDarkMode 
+                            ? 'bg-[#146C94]/20 text-[#19A7CE]' 
                             : 'bg-[#0B409C]/10 text-[#0B409C]'
-                          : isDarkMode
-                            ? 'text-[#F6F1F1]/70 hover:bg-[#146C94]/10 hover:text-[#F6F1F1]'
-                            : 'text-[#10316B]/70 hover:bg-[#0B409C]/5 hover:text-[#10316B]'
+                          : isDarkMode 
+                            ? 'text-[#F6F1F1]/70 hover:bg-[#146C94]/10 hover:text-[#19A7CE]' 
+                            : 'text-[#10316B]/70 hover:bg-[#0B409C]/5 hover:text-[#0B409C]'
                       }`}
                     >
                       <svg
                         className={`mr-3 h-5 w-5 ${
                           isActive
-                            ? isDarkMode
-                              ? 'text-[#19A7CE]'
-                              : 'text-[#0B409C]'
-                            : isDarkMode
-                              ? 'text-[#F6F1F1]/50 group-hover:text-[#F6F1F1]/70'
-                              : 'text-[#10316B]/50 group-hover:text-[#10316B]/70'
+                            ? isDarkMode ? 'text-[#19A7CE]' : 'text-[#0B409C]'
+                            : isDarkMode ? 'text-[#F6F1F1]/50' : 'text-[#10316B]/50'
                         }`}
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -119,32 +121,33 @@ export default function AdminLayout({
                 })}
               </nav>
             </div>
-            <div className={`p-4 border-t ${isDarkMode ? 'border-[#146C94]/20' : 'border-[#0B409C]/10'}`}>
+            
+            {/* Logout button */}
+            <div className="flex-shrink-0 flex border-t border-gray-200 dark:border-[#146C94]/30 p-4">
               <button
                 onClick={handleLogout}
-                className={`w-full flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
-                  isDarkMode
-                    ? 'text-[#F6F1F1]/70 hover:bg-[#146C94]/10 hover:text-[#F6F1F1]'
-                    : 'text-[#10316B]/70 hover:bg-[#0B409C]/5 hover:text-[#10316B]'
-                }`}
+                className={`flex-shrink-0 w-full group block ${
+                  isDarkMode ? 'hover:bg-[#146C94]/10' : 'hover:bg-[#0B409C]/5'
+                } p-2 rounded-md`}
               >
-                <svg
-                  className={`mr-3 h-5 w-5 ${
-                    isDarkMode ? 'text-[#F6F1F1]/50' : 'text-[#10316B]/50'
-                  }`}
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                  />
-                </svg>
-                Logout
+                <div className="flex items-center">
+                  <div>
+                    <svg 
+                      className={`h-5 w-5 ${isDarkMode ? 'text-[#F6F1F1]/70' : 'text-[#10316B]/70'}`} 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      fill="none" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <p className={`text-sm font-medium ${isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'}`}>
+                      Logout
+                    </p>
+                  </div>
+                </div>
               </button>
             </div>
           </div>

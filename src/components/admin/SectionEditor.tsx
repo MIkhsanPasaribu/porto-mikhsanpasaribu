@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import TagInput from './TagInput';
+import { useTheme } from '@/lib/ThemeContext';
 
 interface SectionEditorProps {
   tableName: string;
@@ -27,6 +28,8 @@ export default function SectionEditor({ tableName, initialData, fields, onSucces
   const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const router = useRouter();
+  const { theme } = useTheme();
+  const isDarkMode = theme === 'dark';
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target as HTMLInputElement;
@@ -117,15 +120,27 @@ export default function SectionEditor({ tableName, initialData, fields, onSucces
   };
   
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
+    <div className={`p-6 rounded-lg ${
+      isDarkMode 
+        ? 'bg-[#0A0A0A] border border-[#146C94]/30' 
+        : 'bg-white shadow-md'
+    }`}>
       {success && (
-        <div className="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+        <div className={`mb-6 px-4 py-3 rounded ${
+          isDarkMode 
+            ? 'bg-[#146C94]/20 border border-[#19A7CE]/30 text-[#19A7CE]' 
+            : 'bg-green-100 border border-green-400 text-green-700'
+        }`}>
           Data saved successfully!
         </div>
       )}
       
       {error && (
-        <div className="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+        <div className={`mb-6 px-4 py-3 rounded ${
+          isDarkMode 
+            ? 'bg-red-900/20 border border-red-500/30 text-red-400' 
+            : 'bg-red-100 border border-red-400 text-red-700'
+        }`}>
           {error}
         </div>
       )}
@@ -134,7 +149,9 @@ export default function SectionEditor({ tableName, initialData, fields, onSucces
         <div className="space-y-6">
           {fields.map((field) => (
             <div key={field.name} className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={field.name}>
+              <label className={`block text-sm font-bold mb-2 ${
+                isDarkMode ? 'text-[#F6F1F1]' : 'text-gray-700'
+              }`} htmlFor={field.name}>
                 {field.label}
                 {field.required && <span className="text-red-500 ml-1">*</span>}
               </label>
@@ -146,7 +163,11 @@ export default function SectionEditor({ tableName, initialData, fields, onSucces
                   name={field.name}
                   value={formData[field.name] || ''}
                   onChange={handleChange}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  className={`appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none ${
+                    isDarkMode 
+                      ? 'bg-[#0A0A0A] border-[#146C94]/30 text-[#F6F1F1] focus:border-[#19A7CE] focus:shadow-outline-blue' 
+                      : 'bg-white border-gray-300 text-gray-700 focus:border-[#0B409C] focus:shadow-outline'
+                  }`}
                   required={field.required}
                 />
               )}
@@ -158,7 +179,11 @@ export default function SectionEditor({ tableName, initialData, fields, onSucces
                   value={formData[field.name] || ''}
                   onChange={handleChange}
                   rows={5}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  className={`appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none ${
+                    isDarkMode 
+                      ? 'bg-[#0A0A0A] border-[#146C94]/30 text-[#F6F1F1] focus:border-[#19A7CE] focus:shadow-outline-blue' 
+                      : 'bg-white border-gray-300 text-gray-700 focus:border-[#0B409C] focus:shadow-outline'
+                  }`}
                   required={field.required}
                 ></textarea>
               )}
@@ -170,7 +195,11 @@ export default function SectionEditor({ tableName, initialData, fields, onSucces
                   name={field.name}
                   value={formData[field.name] || ''}
                   onChange={handleChange}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  className={`appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none ${
+                    isDarkMode 
+                      ? 'bg-[#0A0A0A] border-[#146C94]/30 text-[#F6F1F1] focus:border-[#19A7CE] focus:shadow-outline-blue' 
+                      : 'bg-white border-gray-300 text-gray-700 focus:border-[#0B409C] focus:shadow-outline'
+                  }`}
                   required={field.required}
                 />
               )}
@@ -182,7 +211,11 @@ export default function SectionEditor({ tableName, initialData, fields, onSucces
                   name={field.name}
                   value={formData[field.name] || ''}
                   onChange={handleChange}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  className={`appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none ${
+                    isDarkMode 
+                      ? 'bg-[#0A0A0A] border-[#146C94]/30 text-[#F6F1F1] focus:border-[#19A7CE] focus:shadow-outline-blue' 
+                      : 'bg-white border-gray-300 text-gray-700 focus:border-[#0B409C] focus:shadow-outline'
+                  }`}
                   required={field.required}
                 />
               )}
@@ -194,7 +227,9 @@ export default function SectionEditor({ tableName, initialData, fields, onSucces
                   name={field.name}
                   checked={formData[field.name] || false}
                   onChange={handleChange}
-                  className="mr-2 leading-tight"
+                  className={`mr-2 leading-tight ${
+                    isDarkMode ? 'accent-[#19A7CE]' : 'accent-[#0B409C]'
+                  }`}
                 />
               )}
               
@@ -204,7 +239,11 @@ export default function SectionEditor({ tableName, initialData, fields, onSucces
                   name={field.name}
                   value={formData[field.name] || ''}
                   onChange={handleChange}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  className={`appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none ${
+                    isDarkMode 
+                      ? 'bg-[#0A0A0A] border-[#146C94]/30 text-[#F6F1F1] focus:border-[#19A7CE] focus:shadow-outline-blue' 
+                      : 'bg-white border-gray-300 text-gray-700 focus:border-[#0B409C] focus:shadow-outline'
+                  }`}
                   required={field.required}
                 >
                   <option value="">Select an option</option>
@@ -221,7 +260,11 @@ export default function SectionEditor({ tableName, initialData, fields, onSucces
                   value={formData[field.name] || ''}
                   onChange={(value) => handleTagsChange(field.name, value)}
                   placeholder={`Add ${field.label.toLowerCase()}...`}
-                  className="w-full bg-white border-gray-300"
+                  className={`w-full ${
+                    isDarkMode 
+                      ? 'bg-[#0A0A0A] border-[#146C94]/30 text-[#F6F1F1]' 
+                      : 'bg-white border-gray-300 text-gray-700'
+                  }`}
                 />
               )}
               
@@ -241,7 +284,11 @@ export default function SectionEditor({ tableName, initialData, fields, onSucces
                     id={field.name}
                     accept="image/*"
                     onChange={(e) => handleImageUpload(e, field.name)}
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    className={`appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none ${
+                      isDarkMode 
+                        ? 'bg-[#0A0A0A] border-[#146C94]/30 text-[#F6F1F1] file:bg-[#146C94]/20 file:text-[#19A7CE] file:border-[#146C94]/30' 
+                        : 'bg-white border-gray-300 text-gray-700 file:bg-[#0B409C]/10 file:text-[#0B409C] file:border-[#0B409C]/20'
+                    } file:mr-4 file:py-2 file:px-4 file:rounded file:border file:text-sm file:font-semibold`}
                   />
                 </div>
               )}
@@ -253,16 +300,25 @@ export default function SectionEditor({ tableName, initialData, fields, onSucces
           <button
             type="button"
             onClick={() => router.back()}
-            className="mr-4 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+            className={`mr-4 px-4 py-2 border rounded-md ${
+              isDarkMode
+                ? 'border-[#146C94]/30 text-[#F6F1F1] hover:bg-[#146C94]/10'
+                : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+            }`}
           >
             Cancel
           </button>
+          
           <button
             type="submit"
-            className={`px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={loading}
+            className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${
+              isDarkMode
+                ? 'bg-[#19A7CE] hover:bg-[#146C94] focus:ring-[#146C94]'
+                : 'bg-[#0B409C] hover:bg-[#10316B] focus:ring-[#0B409C]'
+            } focus:outline-none focus:ring-2 focus:ring-offset-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
-            {loading ? 'Saving...' : 'Save Changes'}
+            {loading ? 'Saving...' : 'Save'}
           </button>
         </div>
       </form>
