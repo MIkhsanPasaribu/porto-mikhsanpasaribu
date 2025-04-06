@@ -6,10 +6,10 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '@/lib/ThemeContext';
 import { useRouter } from 'next/navigation';
-import { FaBars, FaTimes, FaMoon, FaSun } from 'react-icons/fa';
+import { FaBars, FaTimes } from 'react-icons/fa';
 
 export default function Navbar() {
-  const { theme, setTheme } = useTheme();
+  const { theme } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -79,10 +79,6 @@ export default function Navbar() {
   }, []);
   
   const isDarkMode = theme === 'dark';
-  
-  const toggleTheme = () => {
-    setTheme(isDarkMode ? 'light' : 'dark');
-  };
 
   const navItems = [
     { name: 'Home', href: '#home' },
@@ -96,6 +92,7 @@ export default function Navbar() {
     { name: 'Languages', href: '#languages' },
     { name: 'Organizations', href: '#organizations' },
     { name: 'Volunteering', href: '#volunteering' },
+    { name: 'Contact', href: '#contact' },
   ];
   
   return (
@@ -117,7 +114,7 @@ export default function Navbar() {
             className="flex items-center space-x-2"
           >
             <motion.span 
-              className={`text-xl md:text-2xl font-bold font-poppins ${
+              className={`text-lg md:text-xl font-bold font-poppins ${
                 isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
               }`}
               whileHover={{ scale: 1.05 }}
@@ -142,35 +139,10 @@ export default function Navbar() {
                 {item.name}
               </Link>
             ))}
-            
-            {/* Theme toggle for desktop */}
-            <button
-              onClick={toggleTheme}
-              className={`ml-2 p-2 rounded-full transition-colors ${
-                isDarkMode 
-                  ? 'bg-[#146C94]/20 text-[#19A7CE] hover:bg-[#146C94]/40' 
-                  : 'bg-[#0B409C]/10 text-[#0B409C] hover:bg-[#0B409C]/20'
-              }`}
-              aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
-            >
-              {isDarkMode ? <FaSun className="h-5 w-5" /> : <FaMoon className="h-5 w-5" />}
-            </button>
           </nav>
           
           {/* Mobile menu button */}
           <div className="flex items-center md:hidden">
-            <button
-              onClick={toggleTheme}
-              className={`mr-2 p-2 rounded-full transition-colors ${
-                isDarkMode 
-                  ? 'bg-[#146C94]/20 text-[#19A7CE]' 
-                  : 'bg-[#0B409C]/10 text-[#0B409C]'
-              }`}
-              aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
-            >
-              {isDarkMode ? <FaSun className="h-5 w-5" /> : <FaMoon className="h-5 w-5" />}
-            </button>
-            
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className={`p-2 rounded-md transition-colors ${
