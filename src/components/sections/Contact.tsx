@@ -1,22 +1,33 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '@/lib/ThemeContext';
+import { supabase } from '@/lib/supabase';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { FaLinkedin, FaGithub, FaInstagram, FaFacebook } from 'react-icons/fa';
 
+interface FormData {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}
+
 export default function ContactSection() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: ''
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [submitError, setSubmitError] = useState('');
   const { theme } = useTheme();
   const isDarkMode = theme === 'dark';
+  
+  const [formData, setFormData] = useState<FormData>({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+  
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -25,310 +36,235 @@ export default function ContactSection() {
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate form
+    if (!formData.name || !formData.email || !formData.message) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+    
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+    
     setIsSubmitting(true);
-    setSubmitError('');
     
     try {
-      // Here you would normally send the form data to your backend
-      // For now, we'll just simulate a successful submission
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Insert data into Supabase contacts table
+      const { data, error } = await supabase
+        .from('contacts')
+        .insert([
+          {
+            name: formData.name,
+            email: formData.email,
+            subject: formData.subject,
+            message: formData.message,
+            created_at: new Date().toISOString()
+          }
+        ]);
       
-      setSubmitSuccess(true);
-      setFormData({ name: '', email: '', message: '' });
+      if (error) {
+        console.error('Error submitting contact form:', error);
+        toast.error('Failed to submit your message. Please try again later.');
+        throw error;
+      }
       
-      // Reset success message after 5 seconds
-      setTimeout(() => {
-        setSubmitSuccess(false);
-      }, 5000);
+      // Success
+      toast.success('Your message has been sent successfully!');
+      
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        subject: '',
+        message: ''
+      });
+      
     } catch (error) {
-      setSubmitError('Failed to send message. Please try again later.');
+      console.error('Error in contact form submission:', error);
+      toast.error('An error occurred. Please try again later.');
     } finally {
       setIsSubmitting(false);
     }
   };
   
   return (
-    <section id="contact" className="py-16 md:py-24">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <ToastContainer position="top-right" theme={isDarkMode ? 'dark' : 'light'} />
+      
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        viewport={{ once: true }}
+        className="text-center mb-12"
+      >
+        <h2 className="text-3xl sm:text-4xl font-bold mb-4 font-poppins">Contact Me</h2>
+        <p className="text-lg max-w-2xl mx-auto">
+          Have a question or want to work together? Feel free to reach out!
+        </p>
+      </motion.div>
+      
+      <div className="max-w-3xl mx-auto">
+        <motion.form
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-12"
+          onSubmit={handleSubmit}
+          className="bg-white dark:bg-[#0A0A0A] rounded-lg shadow-md p-6 sm:p-8"
         >
-          <h2 className={`text-3xl font-bold ${
-            isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
-          }`}>
-            Get In Touch
-          </h2>
-          <p className={`mt-4 max-w-2xl mx-auto ${
-            isDarkMode ? 'text-[#F6F1F1]/80' : 'text-[#10316B]/80'
-          }`}>
-            Have a question or want to work together? Feel free to reach out!
-          </p>
-        </motion.div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {/* Contact Form */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label htmlFor="name" className={`block text-sm font-medium ${
-                  isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
-                }`}>
-                  Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  className={`mt-1 block w-full rounded-md shadow-sm py-3 px-4 ${
-                    isDarkMode 
-                      ? 'bg-[#0A0A0A] border-[#146C94] text-[#F6F1F1] focus:border-[#19A7CE]' 
-                      : 'bg-white border-gray-300 text-[#10316B] focus:border-[#0B409C]'
-                  } focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                    isDarkMode ? 'focus:ring-[#19A7CE]' : 'focus:ring-[#0B409C]'
-                  }`}
-                />
-              </div>
-              
-              <div>
-                <label htmlFor="email" className={`block text-sm font-medium ${
-                  isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
-                }`}>
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className={`mt-1 block w-full rounded-md shadow-sm py-3 px-4 ${
-                    isDarkMode 
-                      ? 'bg-[#0A0A0A] border-[#146C94] text-[#F6F1F1] focus:border-[#19A7CE]' 
-                      : 'bg-white border-gray-300 text-[#10316B] focus:border-[#0B409C]'
-                  } focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                    isDarkMode ? 'focus:ring-[#19A7CE]' : 'focus:ring-[#0B409C]'
-                  }`}
-                />
-              </div>
-              
-              <div>
-                <label htmlFor="message" className={`block text-sm font-medium ${
-                  isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
-                }`}>
-                  Message
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  required
-                  rows={5}
-                  className={`mt-1 block w-full rounded-md shadow-sm py-3 px-4 ${
-                    isDarkMode 
-                      ? 'bg-[#0A0A0A] border-[#146C94] text-[#F6F1F1] focus:border-[#19A7CE]' 
-                      : 'bg-white border-gray-300 text-[#10316B] focus:border-[#0B409C]'
-                  } focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                    isDarkMode ? 'focus:ring-[#19A7CE]' : 'focus:ring-[#0B409C]'
-                  }`}
-                />
-              </div>
-              
-              <div>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
-                    isDarkMode 
-                      ? 'bg-[#19A7CE] hover:bg-[#146C94]' 
-                      : 'bg-[#0B409C] hover:bg-[#10316B]'
-                  } focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                    isDarkMode ? 'focus:ring-[#19A7CE]' : 'focus:ring-[#0B409C]'
-                  } transition-colors duration-200 ${
-                    isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
-                  }`}
-                >
-                  {isSubmitting ? 'Sending...' : 'Send Message'}
-                </button>
-              </div>
-              
-              {submitSuccess && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="p-3 bg-green-100 text-green-700 rounded-md"
-                >
-                  Your message has been sent successfully!
-                </motion.div>
-              )}
-              
-              {submitError && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="p-3 bg-red-100 text-red-700 rounded-md"
-                >
-                  {submitError}
-                </motion.div>
-              )}
-            </form>
-          </motion.div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium mb-2">
+                Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-opacity-50 focus:outline-none
+                dark:bg-[#1A1A1A] dark:border-[#333] dark:text-white
+                focus:ring-blue-500 dark:focus:ring-[#19A7CE]"
+              />
+            </div>
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium mb-2">
+                Email <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-opacity-50 focus:outline-none
+                dark:bg-[#1A1A1A] dark:border-[#333] dark:text-white
+                focus:ring-blue-500 dark:focus:ring-[#19A7CE]"
+              />
+            </div>
+          </div>
           
-          {/* Contact Info & Social Media */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className={`rounded-lg p-6 ${
-              isDarkMode 
-                ? 'bg-[#0A0A0A] border border-[#146C94]/20' 
-                : 'bg-white shadow-md'
-            }`}
-          >
-            <h3 className={`text-xl font-semibold mb-6 ${
-              isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
-            }`}>
-              Contact Information
-            </h3>
-            
-            <div className="space-y-4 mb-8">
-              <div className="flex items-start">
-                <div className={`mt-1 mr-3 ${
-                  isDarkMode ? 'text-[#19A7CE]' : 'text-[#0B409C]'
-                }`}>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+          <div className="mb-6">
+            <label htmlFor="subject" className="block text-sm font-medium mb-2">
+              Subject
+            </label>
+            <input
+              type="text"
+              id="subject"
+              name="subject"
+              value={formData.subject}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-opacity-50 focus:outline-none
+              dark:bg-[#1A1A1A] dark:border-[#333] dark:text-white
+              focus:ring-blue-500 dark:focus:ring-[#19A7CE]"
+            />
+          </div>
+          
+          <div className="mb-6">
+            <label htmlFor="message" className="block text-sm font-medium mb-2">
+              Message <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              id="message"
+              name="message"
+              value={formData.message}
+              onChange={handleChange}
+              required
+              rows={5}
+              className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-opacity-50 focus:outline-none
+              dark:bg-[#1A1A1A] dark:border-[#333] dark:text-white
+              focus:ring-blue-500 dark:focus:ring-[#19A7CE]"
+            ></textarea>
+          </div>
+          
+          <div className="text-center">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className={`px-6 py-3 rounded-md text-white font-medium transition-colors duration-300
+              ${isDarkMode 
+                ? 'bg-[#19A7CE] hover:bg-[#146C94]' 
+                : 'bg-[#0B409C] hover:bg-[#10316B]'
+              } ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
+            >
+              {isSubmitting ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                </div>
-                <div>
-                  <p className={`text-sm font-medium ${
-                    isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
-                  }`}>
-                    Email
-                  </p>
-                  <a 
-                    href="mailto:mikhsanpasaribu2@gmail.com" 
-                    className={`text-sm ${
-                      isDarkMode ? 'text-[#F6F1F1]/80 hover:text-[#19A7CE]' : 'text-[#10316B]/80 hover:text-[#0B409C]'
-                    } transition-colors duration-200`}
-                  >
-                    mikhsanpasaribu2@gmail.com
-                  </a>
-                </div>
-              </div>
-              
-              <div className="flex items-start">
-                <div className={`mt-1 mr-3 ${
-                  isDarkMode ? 'text-[#19A7CE]' : 'text-[#0B409C]'
-                }`}>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div>
-                  <p className={`text-sm font-medium ${
-                    isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
-                  }`}>
-                    Location
-                  </p>
-                  <p className={`text-sm ${
-                    isDarkMode ? 'text-[#F6F1F1]/80' : 'text-[#10316B]/80'
-                  }`}>
-                    Padang, Sumatera Barat, Indonesia
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            <h3 className={`text-xl font-semibold mb-4 ${
-              isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
-            }`}>
-              Connect With Me
-            </h3>
-            
-            <div className="flex gap-4">
-              <motion.a 
-                href="https://linkedin.com/in/mikhsanpasaribu" 
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className={`p-3 rounded-full ${
-                  isDarkMode 
-                    ? 'bg-[#0A0A0A] text-[#F6F1F1] hover:bg-[#146C94] border border-[#146C94]/50' 
-                    : 'bg-[#F2F7FF] text-[#10316B] hover:bg-[#0B409C] hover:text-white shadow-sm'
-                } transition-colors duration-300`}
-                aria-label="LinkedIn"
-              >
-                <FaLinkedin size={20} />
-              </motion.a>
-              
-              <motion.a 
-                href="https://github.com/mikhsanpasaribu" 
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className={`p-3 rounded-full ${
-                  isDarkMode 
-                    ? 'bg-[#0A0A0A] text-[#F6F1F1] hover:bg-[#146C94] border border-[#146C94]/50' 
-                    : 'bg-[#F2F7FF] text-[#10316B] hover:bg-[#0B409C] hover:text-white shadow-sm'
-                } transition-colors duration-300`}
-                aria-label="GitHub"
-              >
-                <FaGithub size={20} />
-              </motion.a>
-              
-              <motion.a 
-                href="https://instagram.com/mikhsanpasaribu" 
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className={`p-3 rounded-full ${
-                  isDarkMode 
-                    ? 'bg-[#0A0A0A] text-[#F6F1F1] hover:bg-[#146C94] border border-[#146C94]/50' 
-                    : 'bg-[#F2F7FF] text-[#10316B] hover:bg-[#0B409C] hover:text-white shadow-sm'
-                } transition-colors duration-300`}
-                aria-label="Instagram"
-              >
-                <FaInstagram size={20} />
-              </motion.a>
-              
-              <motion.a 
-                href="https://facebook.com/mikhsanpasaribu" 
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className={`p-3 rounded-full ${
-                  isDarkMode 
-                    ? 'bg-[#0A0A0A] text-[#F6F1F1] hover:bg-[#146C94] border border-[#146C94]/50' 
-                    : 'bg-[#F2F7FF] text-[#10316B] hover:bg-[#0B409C] hover:text-white shadow-sm'
-                } transition-colors duration-300`}
-                aria-label="Facebook"
-              >
-                <FaFacebook size={20} />
-              </motion.a>
-            </div>
-          </motion.div>
-        </div>
+                  Sending...
+                </span>
+              ) : 'Send Message'}
+            </button>
+          </div>
+        </motion.form>
+        
+        {/* Social Media Links */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          viewport={{ once: true }}
+          className="mt-10 text-center"
+        >
+          <h3 className="text-xl font-medium mb-4 font-poppins">Connect With Me</h3>
+          <div className="flex justify-center space-x-6">
+            <a 
+              href="https://www.linkedin.com/in/mikhsanpasaribu/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className={`text-2xl transition-colors duration-300 ${
+                isDarkMode ? 'text-[#F6F1F1] hover:text-[#19A7CE]' : 'text-[#10316B] hover:text-[#0B409C]'
+              }`}
+              aria-label="LinkedIn"
+            >
+              <FaLinkedin />
+            </a>
+            <a 
+              href="https://github.com/mikhsanpasaribu" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className={`text-2xl transition-colors duration-300 ${
+                isDarkMode ? 'text-[#F6F1F1] hover:text-[#19A7CE]' : 'text-[#10316B] hover:text-[#0B409C]'
+              }`}
+              aria-label="GitHub"
+            >
+              <FaGithub />
+            </a>
+            <a 
+              href="https://www.instagram.com/mikhsanpasaribu/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className={`text-2xl transition-colors duration-300 ${
+                isDarkMode ? 'text-[#F6F1F1] hover:text-[#19A7CE]' : 'text-[#10316B] hover:text-[#0B409C]'
+              }`}
+              aria-label="Instagram"
+            >
+              <FaInstagram />
+            </a>
+            <a 
+              href="https://www.facebook.com/mikhsanpasaribu" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className={`text-2xl transition-colors duration-300 ${
+                isDarkMode ? 'text-[#F6F1F1] hover:text-[#19A7CE]' : 'text-[#10316B] hover:text-[#0B409C]'
+              }`}
+              aria-label="Facebook"
+            >
+              <FaFacebook />
+            </a>
+          </div>
+        </motion.div>
       </div>
-    </section>
+    </div>
   );
 }

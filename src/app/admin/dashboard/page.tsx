@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/lib/ThemeContext';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import ContactsAdmin from '@/components/admin/ContactsAdmin';
 
 interface SectionStats {
   name: string;
@@ -23,6 +24,7 @@ export default function AdminDashboard() {
   const { user, isAuthenticated } = useAuth();
   const { theme } = useTheme();
   const isDarkMode = theme === 'dark';
+  const [activeTab, setActiveTab] = useState<string>('dashboard');
   
   // Define sections with descriptions for the dashboard
   const sections = [
@@ -228,137 +230,187 @@ export default function AdminDashboard() {
         </motion.p>
       </div>
       
-      {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, i) => (
-            <div 
-              key={i} 
-              className={`rounded-lg p-6 h-32 animate-pulse ${
-                isDarkMode 
-                  ? 'bg-[#0A0A0A] border border-[#146C94]/20' 
-                  : 'bg-white border border-[#0B409C]/10'
-              }`}
-            >
-              <div className={`h-4 w-24 rounded ${isDarkMode ? 'bg-[#146C94]/30' : 'bg-[#0B409C]/20'}`}></div>
-              <div className={`h-8 w-16 rounded mt-4 ${isDarkMode ? 'bg-[#146C94]/30' : 'bg-[#0B409C]/20'}`}></div>
+      {/* Tab Navigation */}
+      <div className="mb-8">
+        <div className={`flex space-x-4 border-b ${isDarkMode ? 'border-[#146C94]/30' : 'border-[#0B409C]/20'}`}>
+          <button
+            onClick={() => setActiveTab('dashboard')}
+            className={`py-2 px-4 font-medium transition-colors ${
+              activeTab === 'dashboard' 
+                ? isDarkMode 
+                  ? 'text-[#19A7CE] border-b-2 border-[#19A7CE]' 
+                  : 'text-[#0B409C] border-b-2 border-[#0B409C]'
+                : isDarkMode
+                  ? 'text-[#F6F1F1]/70 hover:text-[#F6F1F1]'
+                  : 'text-[#10316B]/70 hover:text-[#10316B]'
+            }`}
+          >
+            Dashboard
+          </button>
+          <button
+            onClick={() => setActiveTab('contacts')}
+            className={`py-2 px-4 font-medium transition-colors ${
+              activeTab === 'contacts' 
+                ? isDarkMode 
+                  ? 'text-[#19A7CE] border-b-2 border-[#19A7CE]' 
+                  : 'text-[#0B409C] border-b-2 border-[#0B409C]'
+                : isDarkMode
+                  ? 'text-[#F6F1F1]/70 hover:text-[#F6F1F1]'
+                  : 'text-[#10316B]/70 hover:text-[#10316B]'
+            }`}
+          >
+            Contact Messages
+          </button>
+        </div>
+      </div>
+      
+      {/* Dashboard Content */}
+      {activeTab === 'dashboard' && (
+        <>
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <div 
+                  key={i} 
+                  className={`rounded-lg p-6 h-32 animate-pulse ${
+                    isDarkMode 
+                      ? 'bg-[#0A0A0A] border border-[#146C94]/20' 
+                      : 'bg-white border border-[#0B409C]/10'
+                  }`}
+                >
+                  <div className={`h-4 w-24 rounded ${isDarkMode ? 'bg-[#146C94]/30' : 'bg-[#0B409C]/20'}`}></div>
+                  <div className={`h-8 w-16 rounded mt-4 ${isDarkMode ? 'bg-[#146C94]/30' : 'bg-[#0B409C]/20'}`}></div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {sections.map((section) => (
-            <Link
-              key={section.name}
-              href={section.href}
-              className={`block p-6 rounded-lg shadow-sm transition-all duration-200 transform hover:scale-105 ${
-                isDarkMode
-                  ? 'bg-[#0A0A0A] border border-[#146C94]/30 hover:border-[#19A7CE]/50'
-                  : 'bg-white border border-[#0B409C]/10 hover:border-[#0B409C]/30'
-              }`}
-            >
-              <div className="flex items-center">
-                <div className={`p-3 rounded-full ${
-                  isDarkMode
-                    ? 'bg-[#146C94]/20 text-[#19A7CE]'
-                    : 'bg-[#0B409C]/10 text-[#0B409C]'
-                }`}>
-                  <svg
-                    className="h-6 w-6"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={section.icon} />
-                  </svg>
-                </div>
-                <div className="ml-4">
-                  <h3 className={`text-lg font-medium ${
-                    isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
-                  }`}>
-                    {section.name}
-                  </h3>
-                  <p className={`mt-1 text-sm ${
-                    isDarkMode ? 'text-[#F6F1F1]/70' : 'text-[#10316B]/70'
-                  }`}>
-                    {section.description}
-                  </p>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {sections.map((section) => (
+                <Link
+                  key={section.name}
+                  href={section.href}
+                  className={`block p-6 rounded-lg shadow-sm transition-all duration-200 transform hover:scale-105 ${
+                    isDarkMode
+                      ? 'bg-[#0A0A0A] border border-[#146C94]/30 hover:border-[#19A7CE]/50'
+                      : 'bg-white border border-[#0B409C]/10 hover:border-[#0B409C]/30'
+                  }`}
+                >
+                  <div className="flex items-center">
+                    <div className={`p-3 rounded-full ${
+                      isDarkMode
+                        ? 'bg-[#146C94]/20 text-[#19A7CE]'
+                        : 'bg-[#0B409C]/10 text-[#0B409C]'
+                    }`}>
+                      <svg
+                        className="h-6 w-6"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={section.icon} />
+                      </svg>
+                    </div>
+                    <div className="ml-4">
+                      <h3 className={`text-lg font-medium ${
+                        isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
+                      }`}>
+                        {section.name}
+                      </h3>
+                      <p className={`mt-1 text-sm ${
+                        isDarkMode ? 'text-[#F6F1F1]/70' : 'text-[#10316B]/70'
+                      }`}>
+                        {section.description}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+          
+          {/* Quick Actions Section */}
+          <motion.div
+            className="mt-12"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+          >
+            <h2 className={`text-xl font-bold mb-4 ${isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'}`}>
+              Quick Actions
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <button 
+                onClick={() => router.push('/admin/projects/new')}
+                className={`p-4 rounded-lg flex items-center transition-colors ${
+                  isDarkMode 
+                    ? 'bg-[#0A0A0A] hover:bg-[#146C94]/20 text-[#F6F1F1] border border-[#146C94]/20' 
+                    : 'bg-white hover:bg-[#0B409C]/5 text-[#10316B] border border-[#0B409C]/10'
+                }`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-2 ${isDarkMode ? 'text-[#19A7CE]' : 'text-[#0B409C]'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Add New Project
+              </button>
+              
+              <button 
+                onClick={() => router.push('/admin/experiences/new')}
+                className={`p-4 rounded-lg flex items-center transition-colors ${
+                  isDarkMode 
+                    ? 'bg-[#0A0A0A] hover:bg-[#146C94]/20 text-[#F6F1F1] border border-[#146C94]/20' 
+                    : 'bg-white hover:bg-[#0B409C]/5 text-[#10316B] border border-[#0B409C]/10'
+                }`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-2 ${isDarkMode ? 'text-[#19A7CE]' : 'text-[#0B409C]'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Add Experience
+              </button>
+              
+              <button 
+                onClick={() => router.push('/admin/skills/new')}
+                className={`p-4 rounded-lg flex items-center transition-colors ${
+                  isDarkMode 
+                    ? 'bg-[#0A0A0A] hover:bg-[#146C94]/20 text-[#F6F1F1] border border-[#146C94]/20' 
+                    : 'bg-white hover:bg-[#0B409C]/5 text-[#10316B] border border-[#0B409C]/10'
+                }`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-2 ${isDarkMode ? 'text-[#19A7CE]' : 'text-[#0B409C]'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                Add Skill
+              </button>
+              
+              <button 
+                onClick={() => router.push('/')}
+                className={`p-4 rounded-lg flex items-center transition-colors ${
+                  isDarkMode 
+                    ? 'bg-[#0A0A0A] hover:bg-[#146C94]/20 text-[#F6F1F1] border border-[#146C94]/20' 
+                    : 'bg-white hover:bg-[#0B409C]/5 text-[#10316B] border border-[#0B409C]/10'
+                }`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-2 ${isDarkMode ? 'text-[#19A7CE]' : 'text-[#0B409C]'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                View Website
+              </button>
+            </div>
+          </motion.div>
+        </>
       )}
       
-      {/* Quick Actions Section */}
-      <motion.div
-        className="mt-12"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.5 }}
-      >
-        <h2 className={`text-xl font-bold mb-4 ${isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'}`}>
-          Quick Actions
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <button 
-            onClick={() => router.push('/admin/projects/new')}
-            className={`p-4 rounded-lg flex items-center transition-colors ${
-              isDarkMode 
-                ? 'bg-[#0A0A0A] hover:bg-[#146C94]/20 text-[#F6F1F1] border border-[#146C94]/20' 
-                : 'bg-white hover:bg-[#0B409C]/5 text-[#10316B] border border-[#0B409C]/10'
-            }`}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-2 ${isDarkMode ? 'text-[#19A7CE]' : 'text-[#0B409C]'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            Add New Project
-          </button>
-          
-          <button 
-            onClick={() => router.push('/admin/experiences/new')}
-            className={`p-4 rounded-lg flex items-center transition-colors ${
-              isDarkMode 
-                ? 'bg-[#0A0A0A] hover:bg-[#146C94]/20 text-[#F6F1F1] border border-[#146C94]/20' 
-                : 'bg-white hover:bg-[#0B409C]/5 text-[#10316B] border border-[#0B409C]/10'
-            }`}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-2 ${isDarkMode ? 'text-[#19A7CE]' : 'text-[#0B409C]'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-            Add Experience
-          </button>
-          
-          <button 
-            onClick={() => router.push('/admin/skills/new')}
-            className={`p-4 rounded-lg flex items-center transition-colors ${
-              isDarkMode 
-                ? 'bg-[#0A0A0A] hover:bg-[#146C94]/20 text-[#F6F1F1] border border-[#146C94]/20' 
-                : 'bg-white hover:bg-[#0B409C]/5 text-[#10316B] border border-[#0B409C]/10'
-            }`}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-2 ${isDarkMode ? 'text-[#19A7CE]' : 'text-[#0B409C]'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-            Add Skill
-          </button>
-          
-          <button 
-            onClick={() => router.push('/')}
-            className={`p-4 rounded-lg flex items-center transition-colors ${
-              isDarkMode 
-                ? 'bg-[#0A0A0A] hover:bg-[#146C94]/20 text-[#F6F1F1] border border-[#146C94]/20' 
-                : 'bg-white hover:bg-[#0B409C]/5 text-[#10316B] border border-[#0B409C]/10'
-            }`}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-2 ${isDarkMode ? 'text-[#19A7CE]' : 'text-[#0B409C]'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-            View Website
-          </button>
-        </div>
-      </motion.div>
+      {/* Contact Messages Tab */}
+      {activeTab === 'contacts' && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <ContactsAdmin />
+        </motion.div>
+      )}
     </div>
   );
 }
