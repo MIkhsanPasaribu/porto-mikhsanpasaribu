@@ -15,7 +15,7 @@ import LanguagesSection from '@/components/sections/Languages';
 import OrganizationsSection from '@/components/sections/Organizations';
 import ContactSection from '@/components/sections/Contact';
 import Navbar from '@/components/ui/Navbar';
-import Footer from '@/components/ui/Footer';
+import Footer from "@/components/layout/Footer";
 import ThreeSceneWrapper from '@/components/3d/ThreeSceneWrapper';
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
 import ClientOnly from '@/components/ui/ClientOnly';
