@@ -7,7 +7,7 @@ import { supabase } from '@/lib/supabase';
 import SectionEditor from '@/components/admin/SectionEditor';
 import { handleAuthError } from '@/lib/supabase';
 
-export default function AdminItemPage() {
+export default function AdminEditPage() {
   const params = useParams();
   const router = useRouter();
   const [item, setItem] = useState<any>(null);
@@ -67,20 +67,15 @@ export default function AdminItemPage() {
           .single();
         
         if (error) {
-          console.error('Error fetching item:', error);
-          setError(`Error fetching item: ${error.message}`);
+          console.error('Supabase error:', error);
           throw error;
         }
         
-        if (data) {
-          console.log('Item data:', data);
-          setItem(data);
-        } else {
-          setError('Item not found');
-        }
+        console.log('Fetched data:', data);
+        setItem(data);
       } catch (err: any) {
-        console.error('Fetch error:', err);
-        setError(err.message || 'An error occurred');
+        console.error('Error fetching item:', err);
+        setError(err.message || `Error fetching ${section} item`);
       } finally {
         setLoading(false);
       }
@@ -125,26 +120,87 @@ export default function AdminItemPage() {
       case 'skills':
         return [
           { name: 'name', label: 'Skill Name', type: 'text', required: true },
-          { name: 'category', label: 'Category', type: 'select', options: ['frontend', 'backend', 'database', 'devops', 'other'], required: true },
-          { name: 'proficiency', label: 'Proficiency (1-100)', type: 'number', required: true },
-          { name: 'icon', label: 'Icon URL', type: 'text' },
+          { name: 'category', label: 'Category', type: 'text', required: true },
+          { name: 'proficiency', label: 'Proficiency (%)', type: 'number', required: true },
+          { name: 'icon', label: 'Icon Class', type: 'text', required: true },
+        ];
+      case 'education':
+        return [
+          { name: 'institution', label: 'Institution', type: 'text', required: true },
+          { name: 'degree', label: 'Degree', type: 'text', required: true },
+          { name: 'field', label: 'Field of Study', type: 'text', required: true },
+          { name: 'location', label: 'Location', type: 'text', required: true },
+          { name: 'start_date', label: 'Start Date', type: 'date', required: true },
+          { name: 'end_date', label: 'End Date', type: 'date' },
+          { name: 'description', label: 'Description', type: 'textarea' },
+          { name: 'gpa', label: 'GPA', type: 'text' },
+          { name: 'institution_logo', label: 'Institution Logo', type: 'image' },
+        ];
+      case 'certifications':
+        return [
+          { name: 'name', label: 'Certification Name', type: 'text', required: true },
+          { name: 'organization', label: 'Issuing Organization', type: 'text', required: true },
+          { name: 'issue_date', label: 'Issue Date', type: 'date', required: true },
+          { name: 'expiry_date', label: 'Expiry Date', type: 'date' },
+          { name: 'credential_id', label: 'Credential ID', type: 'text' },
+          { name: 'credential_url', label: 'Credential URL', type: 'text' },
+          { name: 'description', label: 'Description', type: 'textarea' },
+          { name: 'organization_logo', label: 'Organization Logo', type: 'image' },
+        ];
+      case 'volunteering':
+        return [
+          { name: 'organization', label: 'Organization', type: 'text', required: true },
+          { name: 'role', label: 'Role', type: 'text', required: true },
+          { name: 'start_date', label: 'Start Date', type: 'date', required: true },
+          { name: 'end_date', label: 'End Date', type: 'date' },
+          { name: 'location', label: 'Location', type: 'text', required: true },
+          { name: 'description', label: 'Description', type: 'textarea', required: true },
+          { name: 'organization_logo', label: 'Organization Logo', type: 'image' },
         ];
       case 'awards':
         return [
           { name: 'title', label: 'Award Title', type: 'text', required: true },
           { name: 'issuer', label: 'Issuer', type: 'text', required: true },
           { name: 'date', label: 'Date', type: 'date', required: true },
-          { name: 'description', label: 'Description', type: 'textarea', required: true },
-          { name: 'image_url', label: 'Award Image', type: 'image' },
+          { name: 'description', label: 'Description', type: 'textarea' },
+          { name: 'issuer_logo', label: 'Issuer Logo', type: 'image' },
+        ];
+      case 'languages':
+        return [
+          { name: 'name', label: 'Language', type: 'text', required: true },
+          { name: 'proficiency', label: 'Proficiency Level', type: 'select', required: true, options: ['Native', 'Fluent', 'Advanced', 'Intermediate', 'Basic'] },
+        ];
+      case 'organizations':
+        return [
+          { name: 'name', label: 'Organization Name', type: 'text', required: true },
+          { name: 'role', label: 'Your Role', type: 'text', required: true },
+          { name: 'start_date', label: 'Start Date', type: 'date', required: true },
+          { name: 'end_date', label: 'End Date', type: 'date' },
+          { name: 'description', label: 'Description', type: 'textarea' },
+          { name: 'organization_logo', label: 'Organization Logo', type: 'image' },
+        ];
+       case 'contacts':
+        return [
+          { name: 'name', label: 'Name', type: 'text', required: true },
+          { name: 'email', label: 'Email', type: 'email', required: true },
+          { name: 'subject', label: 'Subject', type: 'text', required: true },
+          { name: 'message', label: 'Message', type: 'textarea', required: true },
         ];
       default:
-        return [];
+        return [
+          { name: 'name', label: 'Name', type: 'text', required: true },
+        ];
     }
+  };
+  
+  const handleSuccess = () => {
+    router.push(`/admin/${section}`);
   };
   
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="p-8">
+        <h1 className="text-2xl font-bold mb-4">Loading...</h1>
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
@@ -152,54 +208,38 @@ export default function AdminItemPage() {
   
   if (error) {
     return (
-      <div className="p-6 max-w-4xl mx-auto">
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
-          <strong className="font-bold">Error: </strong>
-          <span className="block sm:inline">{error}</span>
+      <div className="p-8">
+        <h1 className="text-2xl font-bold mb-4">Error</h1>
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          {error}
         </div>
         <button 
-          onClick={() => router.push('/admin/dashboard')}
+          onClick={() => router.push(`/admin/${section}`)}
           className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
-          Back to Dashboard
-        </button>
-      </div>
-    );
-  }
-  
-  if (!item) {
-    return (
-      <div className="p-6 max-w-4xl mx-auto">
-        <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded relative" role="alert">
-          <strong className="font-bold">Notice: </strong>
-          <span className="block sm:inline">Item not found.</span>
-        </div>
-        <button 
-          onClick={() => router.push('/admin/dashboard')}
-          className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Back to Dashboard
+          Back to List
         </button>
       </div>
     );
   }
   
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Edit {section.charAt(0).toUpperCase() + section.slice(1).replace(/s$/, '')}</h1>
-      
-      <SectionEditor 
-        tableName={section}
-        initialData={item}
-        fields={getFields() as Array<{
-          name: string;
-          label: string;
-          type: "number" | "text" | "textarea" | "image" | "date" | "tags" | "select" | "checkbox";
-          options?: string[];
-          required?: boolean;
-        }>}
-        onSuccess={() => router.push('/admin/dashboard')}
-      />
+    <div className="p-8">
+      <h1 className="text-2xl font-bold mb-4">Edit {section.charAt(0).toUpperCase() + section.slice(1)}</h1>
+      {item && (
+        <SectionEditor
+          tableName={section}
+          initialData={item}
+          fields={getFields() as Array<{
+            name: string;
+            label: string;
+            type: "number" | "text" | "textarea" | "image" | "date" | "tags" | "select" | "checkbox";
+            options?: string[];
+            required?: boolean;
+          }>}
+          onSuccess={handleSuccess}
+        />
+      )}
     </div>
   );
 }
