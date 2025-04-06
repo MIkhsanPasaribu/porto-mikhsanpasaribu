@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import SectionEditor from '@/components/admin/SectionEditor';
+import { handleAuthError } from '@/lib/supabase';
 
 export default function AdminEditPage() {
   const params = useParams();
@@ -13,15 +14,33 @@ export default function AdminEditPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
-  const section = params.section as string;
-  const id = params.id as string;
+  // Ensure params are properly extracted and converted to string
+  const section = typeof params.section === 'string' ? params.section : String(params.section);
+  const id = typeof params.id === 'string' ? params.id : String(params.id);
+  
+  // Add debugging for params
+  useEffect(() => {
+    console.log('Route params:', { section, id, rawParams: params });
+  }, [section, id, params]);
   
   useEffect(() => {
     const checkAuth = async () => {
-      const { data } = await supabase.auth.getUser();
-      if (!data.user) {
+      try {
+        const { data, error } = await supabase.auth.getUser();
+        
+        if (error) {
+          await handleAuthError(error);
+          router.push('/admin');
+          return;
+        }
+        
+        if (!data.user) {
+          router.push('/admin');
+          return;
+        }
+      } catch (err) {
+        console.error('Auth check error:', err);
         router.push('/admin');
-        return;
       }
     };
     
@@ -30,8 +49,16 @@ export default function AdminEditPage() {
   
   useEffect(() => {
     const fetchItem = async () => {
+      if (!section || !id) {
+        setError('Invalid section or ID parameter');
+        setLoading(false);
+        return;
+      }
+      
       try {
         setLoading(true);
+        
+        console.log(`Fetching ${section} item with id ${id}`);
         
         const { data, error } = await supabase
           .from(section)
@@ -39,10 +66,15 @@ export default function AdminEditPage() {
           .eq('id', id)
           .single();
         
-        if (error) throw error;
+        if (error) {
+          console.error('Supabase error:', error);
+          throw error;
+        }
         
+        console.log('Fetched data:', data);
         setItem(data);
       } catch (err: any) {
+        console.error('Error fetching item:', err);
         setError(err.message || `Error fetching ${section} item`);
       } finally {
         setLoading(false);
@@ -154,56 +186,53 @@ export default function AdminEditPage() {
     }
   };
   
+  const handleSuccess = () => {
+    router.push(`/admin/${section}`);
+  };
+  
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-40">
+      <div className="p-8">
+        <h1 className="text-2xl font-bold mb-4">Loading...</h1>
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
   }
   
-  const sectionTitle = section.charAt(0).toUpperCase() + section.slice(1);
+  if (error) {
+    return (
+      <div className="p-8">
+        <h1 className="text-2xl font-bold mb-4">Error</h1>
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          {error}
+        </div>
+        <button 
+          onClick={() => router.push(`/admin/${section}`)}
+          className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Back to List
+        </button>
+      </div>
+    );
+  }
   
   return (
-    <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-      <div className="px-4 py-6 sm:px-0">
-        <div className="mb-6">
-          <button
-            onClick={() => router.back()}
-            className="flex items-center text-blue-600 hover:text-blue-800"
-          >
-            <svg className="h-5 w-5 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back
-          </button>
-        </div>
-        
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">
-          Edit {sectionTitle}
-        </h1>
-        
-        {error && (
-          <div className="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-            {error}
-          </div>
-        )}
-        
-        {item && (
-          <SectionEditor
-            tableName={section}
-            initialData={item}
-            fields={getFields() as Array<{
-              name: string;
-              label: string;
-              type: "number" | "text" | "textarea" | "image" | "date" | "tags" | "select" | "checkbox";
-              options?: string[];
-              required?: boolean;
-            }>}
-            onSuccess={() => router.push(`/admin/${section}`)}
-          />
-        )}
-      </div>
+    <div className="p-8">
+      <h1 className="text-2xl font-bold mb-4">Edit {section.charAt(0).toUpperCase() + section.slice(1)}</h1>
+      {item && (
+        <SectionEditor
+          tableName={section}
+          initialData={item}
+          fields={getFields() as Array<{
+            name: string;
+            label: string;
+            type: "number" | "text" | "textarea" | "image" | "date" | "tags" | "select" | "checkbox";
+            options?: string[];
+            required?: boolean;
+          }>}
+          onSuccess={handleSuccess}
+        />
+      )}
     </div>
   );
 }

@@ -108,7 +108,7 @@ export default function SectionList({ tableName, items, columns, onDelete }: Sec
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end space-x-3">
                       <Link
-                        href={`/admin/${tableName}/${item.id}`}
+                        href={`/admin/${tableName}/edit/${item.id}`}
                         className={`${
                           isDarkMode 
                             ? 'text-[#19A7CE] hover:text-[#F6F1F1]' 
