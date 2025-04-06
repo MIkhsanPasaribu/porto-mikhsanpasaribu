@@ -114,7 +114,7 @@ export default function Navbar() {
             className="flex items-center space-x-2"
           >
             <motion.span 
-              className={`text-lg md:text-xl font-bold font-poppins ${
+              className={`text-base md:text-lg font-semibold font-poppins ${
                 isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
               }`}
               whileHover={{ scale: 1.05 }}
