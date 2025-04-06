@@ -114,6 +114,7 @@ export default function SectionList({ tableName, items, columns, onDelete }: Sec
                             ? 'text-[#19A7CE] hover:text-[#F6F1F1]' 
                             : 'text-[#0B409C] hover:text-[#10316B]'
                         }`}
+                        prefetch={false}
                       >
                         Edit
                       </Link>
