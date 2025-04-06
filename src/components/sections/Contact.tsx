@@ -7,11 +7,12 @@ import { useTheme } from '@/lib/ThemeContext';
 import { supabase } from '@/lib/supabase';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { FaLinkedin, FaGithub, FaInstagram, FaFacebook, FaMapMarkerAlt, FaEnvelope } from 'react-icons/fa';
+import { FaLinkedin, FaGithub, FaInstagram, FaFacebook, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
 
 interface FormData {
   name: string;
   email: string;
+  subject: string;
   message: string;
 }
 
@@ -22,6 +23,7 @@ export default function ContactSection() {
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
+    subject: '',
     message: ''
   });
   
@@ -58,6 +60,7 @@ export default function ContactSection() {
           {
             name: formData.name,
             email: formData.email,
+            subject: formData.subject,
             message: formData.message,
             created_at: new Date().toISOString()
           }
@@ -76,6 +79,7 @@ export default function ContactSection() {
       setFormData({
         name: '',
         email: '',
+        subject: '',
         message: ''
       });
       
@@ -190,6 +194,28 @@ export default function ContactSection() {
                 />
               </div>
               
+              {/* Added Subject Field */}
+              <div className="mb-6">
+                <label htmlFor="subject" className={`block text-sm font-medium mb-2 ${
+                  isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
+                }`}>
+                  Subject
+                </label>
+                <input
+                  type="text"
+                  id="subject"
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  placeholder="Subject of your message"
+                  className={`w-full px-4 py-3 border rounded-md focus:ring-2 focus:ring-opacity-50 focus:outline-none transition-colors
+                  ${isDarkMode 
+                    ? 'bg-[#1A1A1A] border-[#146C94]/30 text-white focus:ring-[#19A7CE] focus:border-[#19A7CE]' 
+                    : 'bg-[#F8FAFF] border-[#0B409C]/20 text-[#10316B] focus:ring-[#0B409C] focus:border-[#0B409C]'
+                  }`}
+                />
+              </div>
+              
               <div className="mb-6">
                 <label htmlFor="message" className={`block text-sm font-medium mb-2 ${
                   isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
@@ -208,7 +234,6 @@ export default function ContactSection() {
                     ? 'bg-[#1A1A1A] border-[#146C94]/30 text-white focus:ring-[#19A7CE] focus:border-[#19A7CE]' 
                     : 'bg-[#F8FAFF] border-[#0B409C]/20 text-[#10316B] focus:ring-[#0B409C] focus:border-[#0B409C]'
                   }`}
-                  placeholder="Your message"
                 ></textarea>
               </div>
               
