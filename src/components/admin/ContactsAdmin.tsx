@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { format } from 'date-fns';
 import { useTheme } from '@/lib/ThemeContext';
+import { FaEye } from 'react-icons/fa';
+import ContactDetailModal from './ContactDetailModal';
 
 interface Contact {
   id: number;
@@ -16,6 +18,7 @@ export default function ContactsAdmin() {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const { theme } = useTheme();
   const isDarkMode = theme === 'dark';
 
@@ -65,6 +68,14 @@ export default function ContactsAdmin() {
     };
   }, []);
 
+  const handleViewDetail = (contact: Contact) => {
+    setSelectedContact(contact);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedContact(null);
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center py-20">
@@ -108,6 +119,9 @@ export default function ContactsAdmin() {
               <tr>
                 <th className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${
                   isDarkMode ? 'text-[#F6F1F1]/80' : 'text-[#10316B]/80'
+                }`}>ID</th>
+                <th className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${
+                  isDarkMode ? 'text-[#F6F1F1]/80' : 'text-[#10316B]/80'
                 }`}>Name</th>
                 <th className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${
                   isDarkMode ? 'text-[#F6F1F1]/80' : 'text-[#10316B]/80'
@@ -117,10 +131,10 @@ export default function ContactsAdmin() {
                 }`}>Subject</th>
                 <th className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${
                   isDarkMode ? 'text-[#F6F1F1]/80' : 'text-[#10316B]/80'
-                }`}>Message</th>
-                <th className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${
-                  isDarkMode ? 'text-[#F6F1F1]/80' : 'text-[#10316B]/80'
                 }`}>Date</th>
+                <th className={`px-6 py-3 text-center text-xs font-medium uppercase tracking-wider ${
+                  isDarkMode ? 'text-[#F6F1F1]/80' : 'text-[#10316B]/80'
+                }`}>Actions</th>
               </tr>
             </thead>
             <tbody className={`divide-y ${
@@ -128,6 +142,9 @@ export default function ContactsAdmin() {
             }`}>
               {contacts.map((contact) => (
                 <tr key={contact.id} className="hover:bg-opacity-50">
+                  <td className={`px-6 py-4 whitespace-nowrap text-sm ${
+                    isDarkMode ? 'text-[#F6F1F1]/80' : 'text-[#10316B]/80'
+                  }`}>{contact.id}</td>
                   <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${
                     isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
                   }`}>{contact.name}</td>
@@ -137,25 +154,37 @@ export default function ContactsAdmin() {
                   <td className={`px-6 py-4 whitespace-nowrap text-sm ${
                     isDarkMode ? 'text-[#F6F1F1]/80' : 'text-[#10316B]/80'
                   }`}>{contact.subject || '-'}</td>
-                  <td className={`px-6 py-4 text-sm ${
-                    isDarkMode ? 'text-[#F6F1F1]/80' : 'text-[#10316B]/80'
-                  }`}>
-                    <div className="max-w-xs overflow-hidden text-ellipsis">
-                      {contact.message.length > 100 
-                        ? `${contact.message.substring(0, 100)}...` 
-                        : contact.message}
-                    </div>
-                  </td>
                   <td className={`px-6 py-4 whitespace-nowrap text-sm ${
                     isDarkMode ? 'text-[#F6F1F1]/80' : 'text-[#10316B]/80'
                   }`}>
-                    {format(new Date(contact.created_at), 'MMM d, yyyy h:mm a')}
+                    {format(new Date(contact.created_at), 'MMM d, yyyy')}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                    <button
+                      onClick={() => handleViewDetail(contact)}
+                      className={`p-2 rounded-full transition-colors ${
+                        isDarkMode 
+                          ? 'bg-[#146C94]/20 text-[#19A7CE] hover:bg-[#146C94]/40' 
+                          : 'bg-[#0B409C]/10 text-[#0B409C] hover:bg-[#0B409C]/20'
+                      }`}
+                      aria-label="View details"
+                    >
+                      <FaEye />
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+      )}
+      
+      {/* Contact Detail Modal */}
+      {selectedContact && (
+        <ContactDetailModal 
+          contact={selectedContact} 
+          onClose={handleCloseModal} 
+        />
       )}
     </div>
   );
