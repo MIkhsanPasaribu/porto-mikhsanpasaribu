@@ -115,7 +115,7 @@ export default function SectionList({ tableName, items, columns, onDelete }: Sec
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end space-x-3">
                       <Link
-                        href={`/admin/${tableName}/edit/${item.id}`}
+                        href={`/admin/${tableName}/${item.id}`}
                         className={`${
                           isDarkMode 
                             ? 'text-[#19A7CE] hover:text-[#F6F1F1]' 
@@ -124,7 +124,7 @@ export default function SectionList({ tableName, items, columns, onDelete }: Sec
                         prefetch={false}
                         onClick={(e) => {
                           e.preventDefault();
-                          const url = `/admin/${tableName}/edit/${item.id}`;
+                          const url = `/admin/${tableName}/${item.id}`;
                           console.log('Navigating to:', url);
                           window.location.href = url;
                         }}
