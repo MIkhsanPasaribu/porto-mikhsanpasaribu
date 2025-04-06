@@ -10,6 +10,12 @@ const nextConfig: NextConfig = {
     // Opsional: Matikan pemeriksaan TypeScript jika masih ada error
     // ignoreBuildErrors: true,
   },
+
+  trailingSlash: false,
+
+  async rewrites() {
+    return [];
+  }
 };
 
 export default nextConfig;

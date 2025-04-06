@@ -5,6 +5,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useTheme } from '@/lib/ThemeContext';
+import { useEffect } from 'react';
 
 interface Column {
   key: string;
@@ -25,6 +26,12 @@ export default function SectionList({ tableName, items, columns, onDelete }: Sec
   const [isDeleting, setIsDeleting] = useState(false);
   const { theme } = useTheme();
   const isDarkMode = theme === 'dark';
+
+  // Tambahkan debugging untuk melihat tableName
+  useEffect(() => {
+    console.log('SectionList rendered with tableName:', tableName);
+    console.log('Items:', items);
+  }, [tableName, items]);
 
   const handleDelete = (id: number) => {
     setItemToDelete(id);
@@ -114,6 +121,13 @@ export default function SectionList({ tableName, items, columns, onDelete }: Sec
                             ? 'text-[#19A7CE] hover:text-[#F6F1F1]' 
                             : 'text-[#0B409C] hover:text-[#10316B]'
                         }`}
+                        prefetch={false}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          const url = `/admin/${tableName}/${item.id}`;
+                          console.log('Navigating to:', url);
+                          window.location.href = url;
+                        }}
                       >
                         Edit
                       </Link>
