@@ -122,6 +122,12 @@ export default function SectionList({ tableName, items, columns, onDelete }: Sec
                             : 'text-[#0B409C] hover:text-[#10316B]'
                         }`}
                         prefetch={false}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          const url = `/admin/${tableName}/edit/${item.id}`;
+                          console.log('Navigating to:', url);
+                          window.location.href = url;
+                        }}
                       >
                         Edit
                       </Link>
