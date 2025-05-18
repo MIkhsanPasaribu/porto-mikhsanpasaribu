@@ -54,12 +54,29 @@ export default function RootLayout({
                 if (typeof window !== 'undefined') {
                   const observer = new MutationObserver(function() {
                     if (document.body) {
-                      const attributesToRemove = ['cz-shortcut-listen', 'data-new-gr-c-s-check-loaded', 'data-gr-ext-installed'];
+                      // Expanded list of attributes to remove
+                      const attributesToRemove = [
+                        'cz-shortcut-listen', 
+                        'data-new-gr-c-s-check-loaded', 
+                        'data-gr-ext-installed',
+                        'data-grammarly',
+                        'data-gramm',
+                        'data-gramm_editor',
+                        'data-gramm_id'
+                      ];
                       attributesToRemove.forEach(attr => {
                         if (document.body.hasAttribute(attr)) {
                           document.body.removeAttribute(attr);
                         }
                       });
+                      
+                      // Also check for any elements with these attributes
+                      attributesToRemove.forEach(attr => {
+                        document.querySelectorAll(\`[data-\${attr}]\`).forEach(el => {
+                          el.removeAttribute(\`data-\${attr}\`);
+                        });
+                      });
+                      
                       observer.disconnect();
                     }
                   });
