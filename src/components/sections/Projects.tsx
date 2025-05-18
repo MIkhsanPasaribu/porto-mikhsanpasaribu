@@ -215,7 +215,7 @@ export default function ProjectsSection() {
           <h2 className={`text-3xl font-bold mb-12 text-center ${
             isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
           }`}>
-            <span className="font-mono">{'<'}</span> Projects <span className="font-mono">{'/>'}</span>
+            <span className="font-mono">{''}</span> Projects <span className="font-mono">{''}</span>
           </h2>
           <div className="flex flex-col items-center justify-center min-h-[300px] text-center">
             <div className="text-5xl mb-4">📁</div>
@@ -228,174 +228,142 @@ export default function ProjectsSection() {
     );
   }
 
-  // Render projects with stacked cards effect
+  // Render projects with horizontal scrolling
   return (
     <section id="projects" className="py-16 md:py-24">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className={`text-3xl font-bold text-center mb-16 ${
           isDarkMode ? 'text-[#F6F1F1]' : 'text-[#10316B]'
         }`}>
-          <span className="font-mono">{'<'}</span> Projects <span className="font-mono">{'/>'}</span>
+          <span className="font-mono">{''}</span> Projects <span className="font-mono">{''}</span>
         </h2>
         
-        {/* Stacked Cards Container */}
-        <div className="relative mt-20 max-w-4xl mx-auto">
-          {projects.map((project, index) => (
-            <motion.div 
-              key={project.id}
-              initial={{ 
-                opacity: 0, 
-                y: 50, 
-                rotate: index % 2 === 0 ? -5 : 5,
-                scale: 0.9
-              }}
-              animate={{ 
-                opacity: 1, 
-                y: 0, 
-                rotate: index % 2 === 0 ? -2 : 2,
-                scale: 1
-              }}
-              transition={{ 
-                duration: 0.5, 
-                delay: index * 0.1,
-                type: "spring",
-                stiffness: 100
-              }}
-              whileHover={{ 
-                scale: 1.02, 
-                rotate: 0,
-                zIndex: 20
-              }}
-              className={`mb-8 rounded-xl overflow-hidden ${
-                isDarkMode 
-                  ? 'bg-[#0A0A0A] border border-[#146C94]/30' 
-                  : 'bg-white shadow-lg'
-              }`}
-              style={{
-                transformOrigin: 'center',
-                position: 'relative',
-                zIndex: projects.length - index,
-                boxShadow: isDarkMode 
-                  ? '0 10px 15px -3px rgba(25, 167, 206, 0.1), 0 4px 6px -2px rgba(25, 167, 206, 0.05)'
-                  : '0 10px 15px -3px rgba(11, 64, 156, 0.1), 0 4px 6px -2px rgba(11, 64, 156, 0.05)'
-              }}
-            >
-              <div className="p-6">
-                {/* Project Header */}
-                <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
-                  <div>
-                    <span className={`text-xs font-mono ${
-                      isDarkMode ? 'text-[#19A7CE]' : 'text-[#0B409C]'
-                    }`}>
-                      {categorizeProject(project.technologies)}
-                    </span>
-                    <h3 className={`text-2xl font-bold ${
-                      isDarkMode ? 'text-[#F6F1F1]' : 'text-[#0B409C]'
-                    }`}>
-                      {project.title}
-                    </h3>
-                  </div>
-                  
-                  <div className="md:ml-auto flex gap-3">
-                    {project.github_url && (
-                      <a 
-                        href={project.github_url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className={`p-2 rounded-full ${
-                          isDarkMode ? 'bg-[#19A7CE]/20 text-[#19A7CE]' : 'bg-[#0B409C]/10 text-[#0B409C]'
-                        } hover:bg-opacity-50 transition-colors`}
-                        aria-label="View GitHub Repository"
-                      >
-                        <FaGithub size={18} />
-                      </a>
-                    )}
-                    {project.live_url && (
-                      <a 
-                        href={project.live_url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className={`p-2 rounded-full ${
-                          isDarkMode ? 'bg-[#19A7CE]/20 text-[#19A7CE]' : 'bg-[#0B409C]/10 text-[#0B409C]'
-                        } hover:bg-opacity-50 transition-colors`}
-                        aria-label="View Live Demo"
-                      >
-                        <FaExternalLinkAlt size={16} />
-                      </a>
-                    )}
-                  </div>
-                </div>
-                
-                {/* Project Content */}
-                <div className="flex flex-col md:flex-row gap-8">
+        {/* Horizontal Scrolling Container */}
+        <div className="relative">
+          <div className="overflow-x-auto pb-8 hide-scrollbar">
+            <div className="flex space-x-6 px-4 w-max">
+              {projects.map((project) => (
+                <motion.div 
+                  key={project.id}
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5 }}
+                  whileHover={{ y: -5 }}
+                  className={`flex-shrink-0 w-[300px] md:w-[350px] rounded-xl overflow-hidden ${
+                    isDarkMode 
+                      ? 'bg-[#0A0A0A] border border-[#146C94]/30' 
+                      : 'bg-white shadow-lg'
+                  }`}
+                >
                   {/* Project Image */}
                   {project.image_url && (
-                    <div className="w-full md:w-2/5 relative rounded-lg overflow-hidden aspect-video">
+                    <div className="relative w-full h-[180px]">
                       <Image
                         src={project.image_url}
                         alt={project.title}
                         fill
                         className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 40vw"
+                        sizes="(max-width: 768px) 300px, 350px"
                         onError={() => console.error(`Failed to load image for project: ${project.title}`)}
                       />
+                      <div className={`absolute top-3 left-3 px-3 py-1 text-xs rounded-full ${
+                        isDarkMode ? 'bg-[#0A0A0A]/90 text-[#19A7CE]' : 'bg-white/90 text-[#0B409C]'
+                      }`}>
+                        {categorizeProject(project.technologies)}
+                      </div>
                     </div>
                   )}
                   
-                  {/* Project Details */}
-                  <div className={`w-full ${project.image_url ? 'md:w-3/5' : ''} space-y-4`}>
-                    {/* Description */}
-                    <div className={`font-mono text-sm p-4 rounded ${
-                      isDarkMode ? 'bg-[#19376D] text-gray-300' : 'bg-gray-100 text-gray-800'
+                  <div className="p-6">
+                    {/* Project Title */}
+                    <h3 className={`text-xl font-bold mb-3 ${
+                      isDarkMode ? 'text-[#F6F1F1]' : 'text-[#0B409C]'
                     }`}>
-                      <p className="whitespace-pre-line">
-                        {project.description}
-                      </p>
-                    </div>
+                      {project.title}
+                    </h3>
+                    
+                    {/* Description - Truncated */}
+                    <p className={`text-sm mb-4 line-clamp-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                      {project.description}
+                    </p>
                     
                     {/* Technologies */}
                     {project.technologies && (
-                      <div>
-                        <h4 className={`text-sm font-semibold mb-2 ${
-                          isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                        }`}>
-                          TECH STACK
-                        </h4>
-                        <div className="flex flex-wrap gap-2">
-                          {project.technologies.split(',').filter(Boolean).map((tech, i) => (
-                            <span key={i} className={`px-3 py-1 text-sm rounded-full ${
-                              isDarkMode ? 'bg-[#19A7CE]/20 text-[#19A7CE]' : 'bg-[#0B409C]/10 text-[#0B409C]'
-                            }`}>
-                              {tech.trim()}
-                            </span>
-                          ))}
-                        </div>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {project.technologies.split(',').filter(Boolean).slice(0, 3).map((tech, i) => (
+                          <span key={i} className={`px-2 py-1 text-xs rounded-full ${
+                            isDarkMode ? 'bg-[#19A7CE]/20 text-[#19A7CE]' : 'bg-[#0B409C]/10 text-[#0B409C]'
+                          }`}>
+                            {tech.trim()}
+                          </span>
+                        ))}
                       </div>
                     )}
                     
-                    {/* View Project Button */}
-                    {(project.live_url || project.github_url) && (
-                      <div className="pt-2">
+                    {/* Links */}
+                    <div className="flex gap-3 mt-4">
+                      {project.github_url && (
                         <a 
-                          href={project.live_url || project.github_url || '#'} 
+                          href={project.github_url} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className={`inline-block px-6 py-3 rounded-lg font-medium ${
-                            isDarkMode 
-                              ? 'bg-[#19A7CE] text-white hover:bg-[#19A7CE]/90' 
-                              : 'bg-[#0B409C] text-white hover:bg-[#0B409C]/90'
-                          } transition-colors`}
+                          className={`p-2 rounded-full ${
+                            isDarkMode ? 'bg-[#19A7CE]/20 text-[#19A7CE]' : 'bg-[#0B409C]/10 text-[#0B409C]'
+                          } hover:bg-opacity-50 transition-colors`}
+                          aria-label="View GitHub Repository"
                         >
-                          View Project
+                          <FaGithub size={18} />
                         </a>
-                      </div>
-                    )}
+                      )}
+                      {project.live_url && (
+                        <a 
+                          href={project.live_url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className={`p-2 rounded-full ${
+                            isDarkMode ? 'bg-[#19A7CE]/20 text-[#19A7CE]' : 'bg-[#0B409C]/10 text-[#0B409C]'
+                          } hover:bg-opacity-50 transition-colors`}
+                          aria-label="View Live Demo"
+                        >
+                          <FaExternalLinkAlt size={16} />
+                        </a>
+                      )}
+                      <a 
+                        href="#" 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          // Implement modal or detailed view here
+                          console.log('View details for:', project.title);
+                        }}
+                        className={`ml-auto p-2 rounded-full ${
+                          isDarkMode ? 'bg-[#19A7CE]/20 text-[#19A7CE]' : 'bg-[#0B409C]/10 text-[#0B409C]'
+                        } hover:bg-opacity-50 transition-colors`}
+                        aria-label="View Details"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </a>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Add custom scrollbar or navigation arrows here if needed */}
         </div>
+        
+        {/* Add this CSS to hide the scrollbar but keep functionality */}
+        <style jsx global>{`
+          .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+          }
+          .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+          }
+        `}</style>
       </div>
     </section>
   );
