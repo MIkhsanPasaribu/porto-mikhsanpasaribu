@@ -60,27 +60,38 @@ export default function ProjectsSection() {
           const processedData = data.map(project => {
             let techString = project.technologies;
             
-            if (techString === null) {
+            // Handle null technologies
+            if (techString === null || techString === undefined) {
               return { ...project, technologies: null };
             }
             
-            // Handle JSON strings
-            if (typeof techString === 'string' && (techString.startsWith('[') || techString.startsWith('{'))) {
+            // Handle JSON strings safely
+            if (typeof techString === 'string') {
               try {
-                const parsed = JSON.parse(techString);
-                if (Array.isArray(parsed)) {
-                  techString = parsed.join(',');
-                } else if (typeof parsed === 'object') {
-                  techString = Object.values(parsed).join(',');
+                // Check if it's a JSON string
+                if (techString.trim().startsWith('[') || techString.trim().startsWith('{')) {
+                  const parsed = JSON.parse(techString);
+                  if (Array.isArray(parsed)) {
+                    techString = parsed.join(',');
+                  } else if (typeof parsed === 'object' && parsed !== null) {
+                    techString = Object.values(parsed).join(',');
+                  }
                 }
               } catch (e) {
                 console.error('Error parsing technologies JSON:', e);
+                // Keep original string if parsing fails
               }
+            } else if (Array.isArray(techString)) {
+              // Handle if it's already an array
+              techString = techString.join(',');
+            } else if (typeof techString === 'object' && techString !== null) {
+              // Handle if it's already an object
+              techString = Object.values(techString).join(',');
             }
             
             return {
               ...project,
-              technologies: techString
+              technologies: typeof techString === 'string' ? techString : null
             };
           });
           
@@ -253,10 +264,7 @@ export default function ProjectsSection() {
               whileHover={{ 
                 scale: 1.02, 
                 rotate: 0,
-                zIndex: 20,
-                boxShadow: isDarkMode 
-                  ? '0 20px 25px -5px rgba(25, 167, 206, 0.2), 0 10px 10px -5px rgba(25, 167, 206, 0.1)'
-                  : '0 20px 25px -5px rgba(11, 64, 156, 0.2), 0 10px 10px -5px rgba(11, 64, 156, 0.1)'
+                zIndex: 20
               }}
               className={`mb-8 rounded-xl overflow-hidden ${
                 isDarkMode 
@@ -266,7 +274,10 @@ export default function ProjectsSection() {
               style={{
                 transformOrigin: 'center',
                 position: 'relative',
-                zIndex: projects.length - index
+                zIndex: projects.length - index,
+                boxShadow: isDarkMode 
+                  ? '0 10px 15px -3px rgba(25, 167, 206, 0.1), 0 4px 6px -2px rgba(25, 167, 206, 0.05)'
+                  : '0 10px 15px -3px rgba(11, 64, 156, 0.1), 0 4px 6px -2px rgba(11, 64, 156, 0.05)'
               }}
             >
               <div className="p-6">
@@ -326,6 +337,7 @@ export default function ProjectsSection() {
                         fill
                         className="object-cover"
                         sizes="(max-width: 768px) 100vw, 40vw"
+                        onError={() => console.error(`Failed to load image for project: ${project.title}`)}
                       />
                     </div>
                   )}
@@ -350,7 +362,7 @@ export default function ProjectsSection() {
                           TECH STACK
                         </h4>
                         <div className="flex flex-wrap gap-2">
-                          {project.technologies.split(',').map((tech, i) => (
+                          {project.technologies.split(',').filter(Boolean).map((tech, i) => (
                             <span key={i} className={`px-3 py-1 text-sm rounded-full ${
                               isDarkMode ? 'bg-[#19A7CE]/20 text-[#19A7CE]' : 'bg-[#0B409C]/10 text-[#0B409C]'
                             }`}>
