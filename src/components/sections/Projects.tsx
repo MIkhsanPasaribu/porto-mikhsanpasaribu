@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -216,7 +217,7 @@ export default function ProjectsSection() {
     );
   }
 
-  // Render projects
+  // Render projects with stacked cards effect
   return (
     <section id="projects" className="py-16 md:py-24">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -226,31 +227,49 @@ export default function ProjectsSection() {
           <span className="font-mono">{'<'}</span> Projects <span className="font-mono">{'/>'}</span>
         </h2>
         
-        <div className="space-y-16">
+        {/* Stacked Cards Container */}
+        <div className="relative mt-20 max-w-4xl mx-auto">
           {projects.map((project, index) => (
             <motion.div 
               key={project.id}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className={`relative ${
-                isDarkMode ? 'border-l-2 border-[#19A7CE]' : 'border-l-2 border-[#0B409C]'
-              } pl-8 pb-8`}
+              initial={{ 
+                opacity: 0, 
+                y: 50, 
+                rotate: index % 2 === 0 ? -5 : 5,
+                scale: 0.9
+              }}
+              animate={{ 
+                opacity: 1, 
+                y: 0, 
+                rotate: index % 2 === 0 ? -2 : 2,
+                scale: 1
+              }}
+              transition={{ 
+                duration: 0.5, 
+                delay: index * 0.1,
+                type: "spring",
+                stiffness: 100
+              }}
+              whileHover={{ 
+                scale: 1.02, 
+                rotate: 0,
+                zIndex: 20,
+                boxShadow: isDarkMode 
+                  ? '0 20px 25px -5px rgba(25, 167, 206, 0.2), 0 10px 10px -5px rgba(25, 167, 206, 0.1)'
+                  : '0 20px 25px -5px rgba(11, 64, 156, 0.2), 0 10px 10px -5px rgba(11, 64, 156, 0.1)'
+              }}
+              className={`mb-8 rounded-xl overflow-hidden ${
+                isDarkMode 
+                  ? 'bg-[#0A0A0A] border border-[#146C94]/30' 
+                  : 'bg-white shadow-lg'
+              }`}
+              style={{
+                transformOrigin: 'center',
+                position: 'relative',
+                zIndex: projects.length - index
+              }}
             >
-              {/* Category Badge */}
-              <div className={`absolute -left-3 top-0 ${
-                isDarkMode ? 'bg-[#0E2954] text-[#19A7CE]' : 'bg-white text-[#0B409C]'
-              } p-2 rounded-full border ${
-                isDarkMode ? 'border-[#19A7CE]' : 'border-[#0B409C]'
-              }`}>
-                {getProjectIcon(project.technologies)}
-              </div>
-              
-              <div className={`${
-                isDarkMode ? 'bg-[#0E2954]/50' : 'bg-white'
-              } rounded-lg p-6 shadow-lg border ${
-                isDarkMode ? 'border-[#19A7CE]/20' : 'border-gray-100'
-              }`}>
+              <div className="p-6">
                 {/* Project Header */}
                 <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
                   <div>
@@ -313,7 +332,7 @@ export default function ProjectsSection() {
                   
                   {/* Project Details */}
                   <div className={`w-full ${project.image_url ? 'md:w-3/5' : ''} space-y-4`}>
-                    {/* Code-like description */}
+                    {/* Description */}
                     <div className={`font-mono text-sm p-4 rounded ${
                       isDarkMode ? 'bg-[#19376D] text-gray-300' : 'bg-gray-100 text-gray-800'
                     }`}>
