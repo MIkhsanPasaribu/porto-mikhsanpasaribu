@@ -2,39 +2,95 @@
 
 :root {
   /* Light mode palette */
-  --background: #F2F7FF;
-  --foreground: #10316B;
-  --accent: #0B409C;
-  --accent-light: #0B409C;
-  --accent-dark: #10316B;
-  --third: #FDBE34;
-  --section-alt: #E6EEFF;
+  --background: #f2f7ff;
+  --foreground: #10316b;
+  --accent: #0b409c;
+  --accent-light: #0b409c;
+  --accent-dark: #10316b;
+  --third: #fdbe34;
+  --section-alt: #e6eeff;
 }
 
 .dark {
   /* Dark mode palette */
   --background: #000000;
-  --foreground: #F6F1F1;
-  --accent: #19A7CE;
-  --accent-light: #146C94;
-  --accent-dark: #19A7CE;
-  --third: #146C94;
-  --section-alt: #0A0A0A;
+  --foreground: #f6f1f1;
+  --accent: #19a7ce;
+  --accent-light: #146c94;
+  --accent-dark: #19a7ce;
+  --third: #146c94;
+  --section-alt: #0a0a0a;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-fira-code), monospace;
+  font-family: var(--font-inter), sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-poppins), sans-serif;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-space-grotesk), sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
-code, pre, .font-mono {
+code,
+pre,
+.font-mono {
   font-family: var(--font-jetbrains-mono), monospace;
+}
+
+/* Typography improvements for tech aesthetic */
+.tech-text {
+  font-family: var(--font-space-grotesk), sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.mono-accent {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 0.9em;
+  color: var(--accent);
+}
+
+/* Modern button and interactive elements */
+.btn-tech {
+  font-family: var(--font-space-grotesk), sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Improved readability */
+p,
+li,
+span {
+  line-height: 1.7;
+  font-weight: 400;
+}
+
+/* Tech-style headings */
+h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+h2 {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+h3 {
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 /* Section backgrounds */
@@ -48,19 +104,20 @@ code, pre, .font-mono {
 
 /* Dark mode styles for various components */
 .dark .bg-white {
-  background-color: #0A0A0A;
+  background-color: #0a0a0a;
 }
 
 .dark .text-gray-700 {
-  color: #F6F1F1;
+  color: #f6f1f1;
 }
 
 .dark .border-gray-200 {
-  border-color: #146C94;
+  border-color: #146c94;
 }
 
 .dark .shadow-md {
-  box-shadow: 0 4px 6px -1px rgba(20, 108, 148, 0.3), 0 2px 4px -2px rgba(20, 108, 148, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(20, 108, 148, 0.3),
+    0 2px 4px -2px rgba(20, 108, 148, 0.2);
 }
 
 /* Light mode specific styles */
@@ -103,48 +160,48 @@ code, pre, .font-mono {
 .dark .card {
   border-color: rgba(20, 108, 148, 0.2);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-  background-color: #0A0A0A;
+  background-color: #0a0a0a;
 }
 
 /* Dark mode gradient backgrounds */
 .dark .bg-gradient-primary {
-  background: linear-gradient(135deg, #000000 0%, #146C94 100%);
+  background: linear-gradient(135deg, #000000 0%, #146c94 100%);
 }
 
 /* Light mode gradient backgrounds */
 .light .bg-gradient-primary {
-  background: linear-gradient(135deg, #F2F7FF 0%, #0B409C 100%);
+  background: linear-gradient(135deg, #f2f7ff 0%, #0b409c 100%);
 }
 
 /* Dark mode hover effects */
 .dark .hover\:bg-blue-900:hover {
-  background-color: #146C94;
+  background-color: #146c94;
 }
 
 /* Custom button styles for new color palette */
 .btn-dark-primary {
-  background-color: #19A7CE;
-  color: #F6F1F1;
+  background-color: #19a7ce;
+  color: #f6f1f1;
 }
 
 .btn-dark-primary:hover {
-  background-color: #146C94;
+  background-color: #146c94;
 }
 
 .btn-light-primary {
-  background-color: #0B409C;
-  color: #F2F7FF;
+  background-color: #0b409c;
+  color: #f2f7ff;
 }
 
 .btn-light-primary:hover {
-  background-color: #10316B;
+  background-color: #10316b;
 }
 
 .btn-light-accent {
-  background-color: #FDBE34;
-  color: #10316B;
+  background-color: #fdbe34;
+  color: #10316b;
 }
 
 .btn-light-accent:hover {
-  background-color: #F0B01F;
+  background-color: #f0b01f;
 }
