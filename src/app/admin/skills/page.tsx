@@ -3,6 +3,7 @@ import { skillCategories, skills } from "@/db/schema";
 import { eq, asc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
+import { DeleteButton } from "@/shared/components/DeleteButton";
 
 async function toggleCategoryVisibility(id: string, isVisible: boolean) {
   "use server";
@@ -78,17 +79,10 @@ export default async function HalamanKeahlian() {
                     {cat.isVisible ? "Sembunyikan" : "Tampilkan"}
                   </button>
                 </form>
-                <form action={deleteCategory.bind(null, cat.id)}>
-                  <button
-                    type="submit"
-                    className="text-xs px-2.5 py-1 rounded-md border border-red-200 text-red-600 hover:bg-red-50 transition-colors"
-                    onClick={(e) => {
-                      if (!confirm("Hapus kategori ini beserta seluruh keahliannya?")) e.preventDefault();
-                    }}
-                  >
-                    Hapus
-                  </button>
-                </form>
+                <DeleteButton
+                  action={deleteCategory.bind(null, cat.id)}
+                  confirmMessage="Hapus kategori ini beserta seluruh keahliannya?"
+                />
               </div>
             </div>
             <div className="flex flex-wrap gap-1.5">

@@ -25,8 +25,8 @@ import {
 } from "@/db/schema";
 import { eq, asc } from "drizzle-orm";
 
-// Revalidate setiap jam — data portfolio jarang berubah
-export const revalidate = 3600;
+// Selalu render dinamis — data portfolio diambil dari DB saat request
+export const dynamic = "force-dynamic";
 
 async function getPortfolioData() {
   const [

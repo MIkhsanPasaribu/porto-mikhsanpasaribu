@@ -3,6 +3,7 @@ import { certifications } from "@/db/schema";
 import { eq, asc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
+import { DeleteButton } from "@/shared/components/DeleteButton";
 
 async function toggleVisibility(id: string, isVisible: boolean) {
   "use server";
@@ -77,17 +78,10 @@ export default async function HalamanSertifikasi() {
               >
                 Edit
               </Link>
-              <form action={deleteCertification.bind(null, item.id)}>
-                <button
-                  type="submit"
-                  className="text-xs px-2.5 py-1 rounded-md border border-red-200 text-red-600 hover:bg-red-50 transition-colors"
-                  onClick={(e) => {
-                    if (!confirm("Hapus sertifikasi ini?")) e.preventDefault();
-                  }}
-                >
-                  Hapus
-                </button>
-              </form>
+              <DeleteButton
+                action={deleteCertification.bind(null, item.id)}
+                confirmMessage="Hapus sertifikasi ini?"
+              />
             </div>
           </div>
         ))}

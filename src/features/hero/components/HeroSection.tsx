@@ -142,7 +142,7 @@ export function HeroSection({ data }: HeroSectionProps) {
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors shadow-sm"
               >
                 <EnvelopeIcon className="w-4 h-4" />
-                Hubungi Saya
+                Contact Me
               </a>
               {data.cvUrl && (
                 <a
@@ -157,7 +157,7 @@ export function HeroSection({ data }: HeroSectionProps) {
               )}
             </motion.div>
 
-            {/* Social links dengan ikon */}
+            {/* Social links with icons */}
             <motion.div
               className="flex items-center gap-2"
               initial={{ opacity: 0, y: 16 }}

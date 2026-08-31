@@ -44,8 +44,6 @@ function NavItem({
   exact?: boolean;
 }) {
   const pathname = usePathname();
-  // Jangan aktifkan sidebar di halaman login
-  if (pathname === "/admin/login") return null;
   const isActive = exact ? pathname === href : pathname.startsWith(href);
 
   return (
@@ -69,13 +67,6 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Render tanpa sidebar untuk halaman login
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const pathname = usePathname();
-  if (pathname === "/admin/login") {
-    return <>{children}</>;
-  }
-
   return (
     <div className="min-h-screen flex bg-surface">
       {/* Sidebar */}
@@ -95,7 +86,7 @@ export default function AdminLayout({
 
         <div className="p-3 border-t border-neutral-300/30">
           <button
-            onClick={() => signOut({ callbackUrl: "/admin/login" })}
+            onClick={() => signOut({ callbackUrl: "/login" })}
             className="flex items-center gap-2.5 w-full px-3 py-2 rounded-md text-sm font-medium text-neutral-600 hover:bg-red-50 hover:text-red-600 transition-colors"
           >
             <ArrowLeftOnRectangleIcon className="w-4 h-4" />
