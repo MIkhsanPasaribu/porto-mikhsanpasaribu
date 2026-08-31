@@ -12,7 +12,6 @@ import {
   SparklesIcon,
   TrophyIcon,
   HeartIcon,
-  ChatBubbleLeftRightIcon,
   ArrowLeftOnRectangleIcon,
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
@@ -29,7 +28,6 @@ const navItems = [
   { href: "/admin/certifications", label: "Sertifikasi", icon: TrophyIcon },
   { href: "/admin/awards", label: "Penghargaan", icon: TrophyIcon },
   { href: "/admin/volunteer", label: "Relawan", icon: HeartIcon },
-  { href: "/admin/contact", label: "Kontak", icon: ChatBubbleLeftRightIcon },
 ];
 
 function NavItem({
