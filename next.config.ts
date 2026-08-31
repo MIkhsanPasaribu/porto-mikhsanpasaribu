@@ -22,6 +22,24 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+
+  trailingSlash: false,
+
+  // Configure images for external domains
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "mrsybafdmuafbwsocent.supabase.co",
+        port: "",
+        pathname: "/storage/v1/object/public/**",
+      },
+    ],
+  },
+
+  async rewrites() {
+    return [];
+  },
 };
 
 export default nextConfig;
